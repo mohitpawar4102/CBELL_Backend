@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v9.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v9.0": {
+      "ContentCreator.Infrastructure/1.0.0": {
+        "runtime": {
+          "ContentCreator.Infrastructure.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "ContentCreator.Infrastructure/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

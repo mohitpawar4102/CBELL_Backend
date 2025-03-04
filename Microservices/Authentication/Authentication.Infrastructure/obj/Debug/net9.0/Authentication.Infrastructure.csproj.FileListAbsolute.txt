@@ -1,0 +1,17 @@
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.Infrastructure\bin\Debug\net9.0\Authentication.Infrastructure.deps.json
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.Infrastructure\bin\Debug\net9.0\Authentication.Infrastructure.dll
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.Infrastructure\bin\Debug\net9.0\Authentication.Infrastructure.pdb
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.Infrastructure\bin\Debug\net9.0\Authentication.Domain.dll
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.Infrastructure\bin\Debug\net9.0\CommonUtils.dll
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.Infrastructure\bin\Debug\net9.0\Authentication.Domain.pdb
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.Infrastructure\bin\Debug\net9.0\CommonUtils.pdb
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.Infrastructure\obj\Debug\net9.0\Authentication.Infrastructure.csproj.AssemblyReference.cache
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.Infrastructure\obj\Debug\net9.0\Authentication.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.Infrastructure\obj\Debug\net9.0\Authentication.Infrastructure.AssemblyInfoInputs.cache
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.Infrastructure\obj\Debug\net9.0\Authentication.Infrastructure.AssemblyInfo.cs
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.Infrastructure\obj\Debug\net9.0\Authentication.Infrastructure.csproj.CoreCompileInputs.cache
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.Infrastructure\obj\Debug\net9.0\Authenti.9F3EE465.Up2Date
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.Infrastructure\obj\Debug\net9.0\Authentication.Infrastructure.dll
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.Infrastructure\obj\Debug\net9.0\refint\Authentication.Infrastructure.dll
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.Infrastructure\obj\Debug\net9.0\Authentication.Infrastructure.pdb
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.Infrastructure\obj\Debug\net9.0\ref\Authentication.Infrastructure.dll

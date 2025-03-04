@@ -1,0 +1,11 @@
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\MicroServices\ContentCreator\ContentCreator.Infrastructure\bin\Debug\net9.0\ContentCreator.Infrastructure.deps.json
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\MicroServices\ContentCreator\ContentCreator.Infrastructure\bin\Debug\net9.0\ContentCreator.Infrastructure.dll
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\MicroServices\ContentCreator\ContentCreator.Infrastructure\bin\Debug\net9.0\ContentCreator.Infrastructure.pdb
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\MicroServices\ContentCreator\ContentCreator.Infrastructure\obj\Debug\net9.0\ContentCreator.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\MicroServices\ContentCreator\ContentCreator.Infrastructure\obj\Debug\net9.0\ContentCreator.Infrastructure.AssemblyInfoInputs.cache
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\MicroServices\ContentCreator\ContentCreator.Infrastructure\obj\Debug\net9.0\ContentCreator.Infrastructure.AssemblyInfo.cs
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\MicroServices\ContentCreator\ContentCreator.Infrastructure\obj\Debug\net9.0\ContentCreator.Infrastructure.csproj.CoreCompileInputs.cache
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\MicroServices\ContentCreator\ContentCreator.Infrastructure\obj\Debug\net9.0\ContentCreator.Infrastructure.dll
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\MicroServices\ContentCreator\ContentCreator.Infrastructure\obj\Debug\net9.0\refint\ContentCreator.Infrastructure.dll
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\MicroServices\ContentCreator\ContentCreator.Infrastructure\obj\Debug\net9.0\ContentCreator.Infrastructure.pdb
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\MicroServices\ContentCreator\ContentCreator.Infrastructure\obj\Debug\net9.0\ref\ContentCreator.Infrastructure.dll
