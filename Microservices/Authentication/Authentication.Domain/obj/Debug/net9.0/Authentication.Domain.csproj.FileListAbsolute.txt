@@ -9,3 +9,4 @@ C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservice
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.Domain\obj\Debug\net9.0\refint\Authentication.Domain.dll
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.Domain\obj\Debug\net9.0\Authentication.Domain.pdb
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.Domain\obj\Debug\net9.0\ref\Authentication.Domain.dll
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.Domain\obj\Debug\net9.0\Authentication.Domain.sourcelink.json

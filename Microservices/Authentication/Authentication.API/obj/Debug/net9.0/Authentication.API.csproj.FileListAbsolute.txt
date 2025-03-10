@@ -35,3 +35,16 @@ C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservice
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.API\obj\Debug\net9.0\Authentication.API.pdb
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.API\obj\Debug\net9.0\Authentication.API.genruntimeconfig.cache
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.API\obj\Debug\net9.0\ref\Authentication.API.dll
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.API\obj\Debug\net9.0\Authentication.API.sourcelink.json
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.API\bin\Debug\net9.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.API\bin\Debug\net9.0\Microsoft.IdentityModel.Abstractions.dll
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.API\bin\Debug\net9.0\Microsoft.IdentityModel.JsonWebTokens.dll
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.API\bin\Debug\net9.0\Microsoft.IdentityModel.Logging.dll
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.API\bin\Debug\net9.0\Microsoft.IdentityModel.Protocols.dll
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.API\bin\Debug\net9.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.API\bin\Debug\net9.0\Microsoft.IdentityModel.Tokens.dll
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.API\bin\Debug\net9.0\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.API\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.API\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.API\bin\Debug\net9.0\System.IdentityModel.Tokens.Jwt.dll
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.API\bin\Debug\net9.0\Microsoft.AspNetCore.Authentication.Google.dll
