@@ -1,48 +1,43 @@
-using System.Text;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using YourNamespace.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+builder.Services.AddScoped<TokenService>(); // Ensure TokenService is registered
 
-// Add services to the container.
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.AddSession();
-builder.Services.AddDataProtection();
+// Enable CORS (needed for frontend API calls with cookies)
+// builder.Services.AddCors(options =>
+// {
+//     options.AddPolicy("AllowFrontend",
+//         policy => policy
+//             .WithOrigins("https://your-frontend-url.com") // Change this to match your frontend
+//             .AllowCredentials()
+//             .AllowAnyHeader()
+//             .AllowAnyMethod());
+// });
 
-// ✅ Register TokenService for JWT Generation
-builder.Services.AddScoped<TokenService>();
+builder.Services.Configure<CookiePolicyOptions>(options =>
+        {
+            // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+            options.CheckConsentNeeded = context => true;
+            options.MinimumSameSitePolicy = SameSiteMode.None;
+        });
 
-builder.Services.AddDistributedMemoryCache();
-// ✅ Configure Combined Authentication (Cookies + JWT)
-builder.Services.AddSession(options =>
+
+// Add Authentication services
+builder.Services.AddAuthentication(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(60);
-    options.Cookie.HttpOnly = true;
-    options.Cookie.IsEssential = true;
-})
-.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;  // Use Cookies first
+    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
-    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-})
-.AddCookie(options =>
-{
-    options.Cookie.HttpOnly = true;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;  // ❌ Change this if running on HTTP
-    options.Cookie.SameSite = SameSiteMode.None;  // ✅ Ensure cookies are sent with OAuth redirect
-    options.Cookie.Name = "auth_cookie";
-    options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
 })
 .AddJwtBearer(options =>
 {
-    var key = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"]);
+    var key = Encoding.UTF8.GetBytes(builder.Configuration["Authentication:Jwt:Secret"]);
 
     options.TokenValidationParameters = new TokenValidationParameters
     {
@@ -50,40 +45,46 @@ builder.Services.AddSession(options =>
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],   
-        ValidAudience = builder.Configuration["Jwt:Audience"],
+        ValidIssuer = builder.Configuration["Authentication:Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Authentication:Jwt:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(key)
     };
-})
-.AddGoogle(googleOptions =>
+
+    // Extract JWT from cookies if no Authorization header is found
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var tokenFromCookie = context.Request.Cookies["AuthToken"];
+            if (!string.IsNullOrEmpty(tokenFromCookie))
+            {
+                context.Token = tokenFromCookie;
+            }
+            return Task.CompletedTask;
+        }
+    };
+}).AddCookie(options =>
+            {
+                options.Cookie.IsEssential = true;
+            })
+.AddGoogle(options =>
 {
-    googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"];
-    googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
-    googleOptions.CallbackPath = "/api/auth/google-response";  
-    googleOptions.SaveTokens = true;  // ✅ Store tokens in session
-    googleOptions.UsePkce = true;
+    options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme; // Ensure sign-in works
+    options.ClientId = builder.Configuration["Google:ClientId"];
+    options.ClientSecret = builder.Configuration["Google:ClientSecret"];
+    // options.CallbackPath = ""; // Remove spaces
 });
 
 builder.Services.AddAuthorization();
-builder.Logging.AddConsole();
-builder.Services.Configure<Microsoft.AspNetCore.HttpLogging.HttpLoggingOptions>(options =>
-{
-    options.LoggingFields = Microsoft.AspNetCore.HttpLogging.HttpLoggingFields.All;
-});
+builder.Services.AddControllers();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseCors("AllowFrontend"); // Enable CORS before authentication
 
-// ✅ Correct Middleware Order
-app.UseSession();  // Must be before authentication
-app.UseHttpsRedirection();
-app.UseAuthentication();    
+app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
+
 app.Run();
