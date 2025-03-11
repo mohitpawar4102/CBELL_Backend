@@ -1,34 +1,18 @@
+using YourNamespace.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using YourNamespace.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddScoped<TokenService>(); // Ensure TokenService is registered
+// Register services in DI container
+builder.Services.AddScoped<TokenService>(); // TokenService for JWT generation
+builder.Services.AddScoped<AuthService>();  // Register AuthService for authentication logic
+builder.Services.AddHttpContextAccessor();  // Required for IHttpContextAccessor
 
-// Enable CORS (needed for frontend API calls with cookies)
-// builder.Services.AddCors(options =>
-// {
-//     options.AddPolicy("AllowFrontend",
-//         policy => policy
-//             .WithOrigins("https://your-frontend-url.com") // Change this to match your frontend
-//             .AllowCredentials()
-//             .AllowAnyHeader()
-//             .AllowAnyMethod());
-// });
-
-builder.Services.Configure<CookiePolicyOptions>(options =>
-        {
-            // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-            options.CheckConsentNeeded = context => true;
-            options.MinimumSameSitePolicy = SameSiteMode.None;
-        });
-
-
-// Add Authentication services
+// Authentication and Authorization configuration
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -37,8 +21,13 @@ builder.Services.AddAuthentication(options =>
 })
 .AddJwtBearer(options =>
 {
-    var key = Encoding.UTF8.GetBytes(builder.Configuration["Authentication:Jwt:Secret"]);
+    var secret = builder.Configuration["Authentication:Jwt:Secret"];
+    if (secret == null)
+    {
+        throw new InvalidOperationException("JWT secret is not configured.");
+    }
 
+    var key = Encoding.UTF8.GetBytes(secret);
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
@@ -63,16 +52,23 @@ builder.Services.AddAuthentication(options =>
             return Task.CompletedTask;
         }
     };
-}).AddCookie(options =>
-            {
-                options.Cookie.IsEssential = true;
-            })
+})
+.AddCookie(options =>
+{
+    options.Cookie.IsEssential = true;
+})
 .AddGoogle(options =>
 {
-    options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme; // Ensure sign-in works
-    options.ClientId = builder.Configuration["Google:ClientId"];
-    options.ClientSecret = builder.Configuration["Google:ClientSecret"];
-    // options.CallbackPath = ""; // Remove spaces
+    var clientId = builder.Configuration.GetValue<string>("Google:ClientId");
+    var clientSecret = builder.Configuration.GetValue<string>("Google:ClientSecret");
+    options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    if (string.IsNullOrWhiteSpace(clientId) || string.IsNullOrWhiteSpace(clientSecret))
+    {
+        throw new InvalidOperationException("Missing required Google authentication configuration.");
+    }
+
+    options.ClientId = clientId;
+    options.ClientSecret = clientSecret;
 });
 
 builder.Services.AddAuthorization();
@@ -80,8 +76,7 @@ builder.Services.AddControllers();
 
 var app = builder.Build();
 
-app.UseCors("AllowFrontend"); // Enable CORS before authentication
-
+// Configure the middleware pipeline
 app.UseAuthentication();
 app.UseAuthorization();
 

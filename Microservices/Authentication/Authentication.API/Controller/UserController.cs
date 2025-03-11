@@ -9,14 +9,9 @@ namespace YourNamespace.Controllers
     {
         [HttpGet("profile")]
         [Authorize] // This ensures only authenticated users can access this endpoint
-        public IActionResult GetUserProfile()
-        {
-            // Console.WriteLine("Testing");
-            return Ok(new
+        public IActionResult GetUserProfile() => Ok(new
             {
                 message = "This is a secured profile",
-                // user = User!.Identity!.Name 
             });
-        }
     }
 }
