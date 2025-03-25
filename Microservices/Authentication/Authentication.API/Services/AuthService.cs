@@ -26,19 +26,25 @@ namespace YourNamespace.Services
             _configuration = configuration;
         }
 
-        public async Task<IActionResult> Register(RegisterRequest request)
+         public async Task<IActionResult> Register(RegisterRequest request)
         {
             var existingUser = await _mongoDbService.Users
-                .Find(u => u.Username == request.Username)
+                .Find(u => u.Email == request.Email)
                 .FirstOrDefaultAsync();
             if (existingUser != null)
                 return new BadRequestObjectResult(new { message = "User already exists" });
 
             var user = new User
             {
-                Username = request.Username,
                 Email = request.Email,
-                PasswordHash = HashPassword(request.Password)
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                PasswordHash = HashPassword(request.Password),
+                OrganizationId = request.OrganizationId,
+                MFA = 1,
+                UserStatus = 1,
+                CreatedOn = DateTime.UtcNow,
+                UpdatedOn = DateTime.UtcNow
             };
 
             await _mongoDbService.Users.InsertOneAsync(user);
@@ -47,34 +53,29 @@ namespace YourNamespace.Services
 
         public async Task<IActionResult> Login(LoginModel login)
         {
-            // Console.WriteLine($"Received login request: {JsonSerializer.Serialize(login)}");
-
             var user = await _mongoDbService.Users
-                .Find(u => u.Username == login.Username)
+                .Find(u => u.Email == login.Email)
                 .FirstOrDefaultAsync();
 
             if (user == null || !VerifyPassword(login.Password, user.PasswordHash))
-                return new UnauthorizedObjectResult(new { message = "Invalid username or password" });
+                return new UnauthorizedObjectResult(new { message = "Invalid email or password" });
 
-            // Generate local access and refresh tokens
-            var accessToken = _tokenService.GenerateAccessToken(user.Username);
+            var accessToken = _tokenService.GenerateAccessToken(user.Email);
             var refreshToken = _tokenService.GenerateRefreshToken();
 
-            // Store refresh token in the database
             user.RefreshToken = refreshToken;
             user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
             await _mongoDbService.Users.ReplaceOneAsync(u => u.Id == user.Id, user);
 
-            // Store tokens in cookies
             SetAuthTokenCookie("LocalAccessToken", accessToken);
             SetAuthTokenCookie("LocalRefreshToken", refreshToken);
 
-            // Return tokens in response as well
             return new OkObjectResult(new
             {
                 message = "Login successful",
-                // accessToken,
-                // refreshToken,
+                email = user.Email,
+                firstName = user.FirstName,
+                lastName = user.LastName
             });
         }
         public async Task<IActionResult> Logout()

@@ -4,7 +4,7 @@ namespace YourNamespace.DTOs
     {
         public string? Id { get; set; }
         public string EventName { get; set; }
-        public int EventTypeId { get; set; }
+        public string  EventTypeId { get; set; }
         public string EventTypeDesc { get; set; }
         public string EventDescription { get; set; }
         public string LocationDetails { get; set; }
@@ -15,5 +15,6 @@ namespace YourNamespace.DTOs
         public DateTime EventDate { get; set; }
         public int UpdatedBy { get; set; }
         public DateTime UpdatedOn { get; set; }
+        // public string OrganizationId {get; set;}
     }
 }

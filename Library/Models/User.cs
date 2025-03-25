@@ -8,10 +8,17 @@ namespace YourNamespace.Models
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
-        public required string Username { get; set; }
+        
         public required string PasswordHash { get; set; }
         public required string Email { get; set; }
-        public string? RefreshToken { get; set; } // Nullable in case it's not assigned immediately
+        public string? RefreshToken { get; set; }
         public DateTime? RefreshTokenExpiryTime { get; set; }
+        public required string FirstName { get; set; }
+        public required string LastName { get; set; }
+        public int MFA { get; set; } = 1;
+        public string OrganizationId { get; set; }
+        public int UserStatus { get; set; } = 1;
+        public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedOn { get; set; } = DateTime.UtcNow;
     }
 }

@@ -1,0 +1,12 @@
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\MicroServices\ContentCreator\ContentCreator.Shared\bin\Debug\net9.0\ContentCreator.Shared.deps.json
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\MicroServices\ContentCreator\ContentCreator.Shared\bin\Debug\net9.0\ContentCreator.Shared.dll
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\MicroServices\ContentCreator\ContentCreator.Shared\bin\Debug\net9.0\ContentCreator.Shared.pdb
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\MicroServices\ContentCreator\ContentCreator.Shared\obj\Debug\net9.0\ContentCreator.Shared.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\MicroServices\ContentCreator\ContentCreator.Shared\obj\Debug\net9.0\ContentCreator.Shared.AssemblyInfoInputs.cache
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\MicroServices\ContentCreator\ContentCreator.Shared\obj\Debug\net9.0\ContentCreator.Shared.AssemblyInfo.cs
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\MicroServices\ContentCreator\ContentCreator.Shared\obj\Debug\net9.0\ContentCreator.Shared.csproj.CoreCompileInputs.cache
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\MicroServices\ContentCreator\ContentCreator.Shared\obj\Debug\net9.0\ContentCreator.Shared.sourcelink.json
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\MicroServices\ContentCreator\ContentCreator.Shared\obj\Debug\net9.0\ContentCreator.Shared.dll
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\MicroServices\ContentCreator\ContentCreator.Shared\obj\Debug\net9.0\refint\ContentCreator.Shared.dll
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\MicroServices\ContentCreator\ContentCreator.Shared\obj\Debug\net9.0\ContentCreator.Shared.pdb
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\MicroServices\ContentCreator\ContentCreator.Shared\obj\Debug\net9.0\ref\ContentCreator.Shared.dll

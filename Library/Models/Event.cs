@@ -1,6 +1,5 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-using System;
 
 namespace YourNamespace.Models
 {
@@ -8,42 +7,19 @@ namespace YourNamespace.Models
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string? Id { get; set; }
-
-        [BsonElement("EventName")]
+        public string Id { get; set; } = ObjectId.GenerateNewId().ToString(); // MongoDB uses string for ObjectId
         public string EventName { get; set; }
-
-        [BsonElement("EventTypeId")]
-        public int EventTypeId { get; set; }
-
-        [BsonElement("EventTypeDesc")]
+        public string EventTypeId { get; set; }
         public string EventTypeDesc { get; set; }
-
-        [BsonElement("EventDescription")]
         public string EventDescription { get; set; }
-
-        [BsonElement("LocationDetails")]
         public string LocationDetails { get; set; }
-
-        [BsonElement("Dignitaries")]
-        public string? Dignitaries { get; set; }
-
-        [BsonElement("SpecialGuests")]
-        public string? SpecialGuests { get; set; }
-
-        [BsonElement("CreatedBy")]
+        public string Dignitaries { get; set; }
+        public string SpecialGuests { get; set; }
         public int CreatedBy { get; set; }
-
-        [BsonElement("CreatedOn")]
         public DateTime CreatedOn { get; set; }
-
-        [BsonElement("EventDate")]
         public DateTime EventDate { get; set; }
-
-        [BsonElement("UpdatedBy")]
         public int UpdatedBy { get; set; }
-
-        [BsonElement("UpdatedOn")]
         public DateTime UpdatedOn { get; set; }
+        public string OrganizationId { get; set; }
     }
 }
