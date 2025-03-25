@@ -1,10 +1,7 @@
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 using YourNamespace.Services;
 using YourNamespace.Models;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Authentication.Google;
 
 namespace YourNamespace.Controllers
 {
@@ -19,47 +16,20 @@ namespace YourNamespace.Controllers
             _authService = authService;
         }
 
+        [HttpPost("register")]
+        public Task<IActionResult> Register([FromBody] RegisterRequest request) => _authService.Register(request);
+
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginModel login)
-        {
-            var (success, message, token) = await _authService.LoginAsync(login);
-
-            if (success)
-            {
-                return Ok(new { message, token });
-            }
-
-            return Unauthorized(new { message });
-        }
-
-        [HttpPost("logout")]
-        public IActionResult Logout()
-        {
-            var (success, message) = _authService.Logout();
-            return Ok(new { message });
-        }
+        public Task<IActionResult> Login([FromBody] LoginModel login) => _authService.Login(login);
 
         [HttpGet("google-login")]
-        public IActionResult GoogleLogin()
-        {
-            var properties = new AuthenticationProperties
-            {
-                RedirectUri = Url.Action("GoogleCallback")
-            };
-            return Challenge(properties, GoogleDefaults.AuthenticationScheme);
-        }
+        public IActionResult GoogleLogin() => _authService.InitiateGoogleLogin();
 
         [HttpGet("google-response")]
-        public async Task<IActionResult> GoogleCallback()
-        {
-            var (success, message, token, email, name) = await _authService.GoogleLoginAsync();
+        public Task<IActionResult> GoogleCallback() => _authService.GoogleLoginAsync();
 
-            if (success)
-            {
-                return Ok(new { message, token, email, name });
-            }
+        [HttpPost("logout")]
+        public Task<IActionResult> Logout() => _authService.Logout();
 
-            return BadRequest(new { message });
-        }
     }
 }

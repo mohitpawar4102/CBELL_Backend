@@ -3,15 +3,45 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using MongoDB.Driver;
 using System.Text;
+using YourNamespace.Library.Database;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authentication;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.WebHost.UseKestrel(options => options.ListenAnyIP(5001))
+.UseUrls("*");
+
+// Register MongoDB
+var mongoConnectionString = builder.Configuration.GetConnectionString("MongoDb");
+var databaseName = builder.Configuration["MongoDbSettings:DatabaseName"];
+
+if (string.IsNullOrEmpty(mongoConnectionString) || string.IsNullOrEmpty(databaseName))
+{
+    throw new InvalidOperationException("MongoDB configuration is missing.");
+}
+
+var mongoClient = new MongoClient(mongoConnectionString);
+var database = mongoClient.GetDatabase(databaseName);
+builder.Services.AddSingleton(database);
 
 // Register services in DI container
 builder.Services.AddScoped<TokenService>(); // TokenService for JWT generation
 builder.Services.AddScoped<AuthService>();  // Register AuthService for authentication logic
 builder.Services.AddHttpContextAccessor();  // Required for IHttpContextAccessor
+builder.Services.AddScoped<MongoDbService>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        builder => builder
+            .AllowAnyOrigin() // Allows requests from any domain (use carefully in production)
+            .AllowAnyMethod() // Allows GET, POST, PUT, DELETE, etc.
+            .AllowAnyHeader()); // Allows all headers
+});
 // Authentication and Authorization configuration
 builder.Services.AddAuthentication(options =>
 {
@@ -59,9 +89,10 @@ builder.Services.AddAuthentication(options =>
 })
 .AddGoogle(options =>
 {
-    var clientId = builder.Configuration.GetValue<string>("Google:ClientId");
-    var clientSecret = builder.Configuration.GetValue<string>("Google:ClientSecret");
+    var clientId = builder.Configuration["Google:ClientId"];
+    var clientSecret = builder.Configuration["Google:ClientSecret"];
     options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+
     if (string.IsNullOrWhiteSpace(clientId) || string.IsNullOrWhiteSpace(clientSecret))
     {
         throw new InvalidOperationException("Missing required Google authentication configuration.");
@@ -69,17 +100,48 @@ builder.Services.AddAuthentication(options =>
 
     options.ClientId = clientId;
     options.ClientSecret = clientSecret;
+
+    // Request email and profile scopes (already included by default)
+    options.Scope.Add("email");
+    options.Scope.Add("profile");
+
+    // Important: Request offline access to receive refresh tokens
+    options.Scope.Add("https://www.googleapis.com/auth/userinfo.email");
+    options.Scope.Add("https://www.googleapis.com/auth/userinfo.profile");
+    options.Scope.Add("openid");
+
+    options.SaveTokens = true; // Ensure tokens are saved
+    options.AccessType = "offline"; // Requests a refresh token
+    options.ClaimActions.MapJsonKey(ClaimTypes.Email, "email");
 });
+
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.SuppressModelStateInvalidFilter = false;
+});
+
+builder.Services.Configure<CookiePolicyOptions>(options =>
+{
+    options.MinimumSameSitePolicy = SameSiteMode.Lax;
+});
+
 
 builder.Services.AddAuthorization();
 builder.Services.AddControllers();
 
 var app = builder.Build();
 
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+
 // Configure the middleware pipeline
+app.UseCors("AllowAll");
+app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
+await app.RunAsync();
