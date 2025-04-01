@@ -29,6 +29,7 @@ builder.Services.AddSingleton(database);
 builder.Services.AddScoped<EventService>();
 builder.Services.AddSingleton<TaskService>();
 builder.Services.AddScoped<EventTypeService>();
+builder.Services.AddScoped<OrganizationService>();
 builder.Services.AddSingleton<MongoDbService>();
 
 // Add controllers

@@ -50,7 +50,8 @@ namespace YourNamespace.Services
                 UpdatedOn = DateTime.UtcNow,
                 CreativeNumbers = taskDto.CreativeNumbers,
                 ChecklistDetails = taskDto.ChecklistDetails,
-                Description = taskDto.Description
+                Description = taskDto.Description,
+                OrganizationId = taskDto.OrganizationId,
             };
 
             try

@@ -17,8 +17,6 @@ namespace YourNamespace.Services
         {
             _mongoDbService = mongoDbService;
         }
-
-        // Method to get the Events collection dynamically
         private IMongoCollection<Event> GetEventsCollection()
         {
             return _mongoDbService.GetDatabase().GetCollection<Event>("EventsMst");
@@ -48,7 +46,8 @@ namespace YourNamespace.Services
                 CreatedOn = DateTime.UtcNow,
                 EventDate = eventDto.EventDate,
                 UpdatedBy = eventDto.CreatedBy,
-                UpdatedOn = DateTime.UtcNow
+                UpdatedOn = DateTime.UtcNow,
+                OrganizationId = eventDto.OrganizationId
             };
 
             try

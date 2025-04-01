@@ -13,6 +13,7 @@ namespace YourNamespace.DTO
         public string CreativeType { get; set; }
         public DateTime DueDate { get; set; }
         public int CreativeNumbers { get; set; }
+        public string? OrganizationId { get; set; }
 
         [JsonPropertyName("ChecklistDetails")]
         public List<string> ChecklistDetails { get; set; } = new List<string>();

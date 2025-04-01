@@ -23,7 +23,7 @@ namespace YourNamespace.Models
         [BsonElement("ChecklistDetails")]
         public List<string> ChecklistDetails { get; set; } = new List<string>();
         public string? Description { get; set; }
-        // Soft Delete Fields
+        public string OrganizationId { get; set; }
         public bool IsDeleted { get; set; } = false;
         public DateTime? DeletedOn { get; set; }
     }

@@ -13,7 +13,6 @@ namespace YourNamespace.Library.Database
             var client = new MongoClient(configuration.GetConnectionString("MongoDb"));
             _database = client.GetDatabase(configuration.GetSection("MongoDbSettings")["DatabaseName"]);
         }
-
          public IMongoDatabase GetDatabase() => _database;
     }
 }
