@@ -7,7 +7,6 @@ using System.Security.Claims;
 using YourNamespace.Library.Database;
 using YourNamespace.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
 
 namespace YourNamespace.Services
 {
@@ -26,11 +25,15 @@ namespace YourNamespace.Services
             _configuration = configuration;
         }
 
-         public async Task<IActionResult> Register(RegisterRequest request)
+        private IMongoCollection<User> GetUsersCollection()
         {
-            var existingUser = await _mongoDbService.Users
-                .Find(u => u.Email == request.Email)
-                .FirstOrDefaultAsync();
+            return _mongoDbService.GetDatabase().GetCollection<User>("Users");
+        }
+
+        public async Task<IActionResult> Register(RegisterRequest request)
+        {
+            var usersCollection = GetUsersCollection();
+            var existingUser = await usersCollection.Find(u => u.Email == request.Email).FirstOrDefaultAsync();
             if (existingUser != null)
                 return new BadRequestObjectResult(new { message = "User already exists" });
 
@@ -47,15 +50,14 @@ namespace YourNamespace.Services
                 UpdatedOn = DateTime.UtcNow
             };
 
-            await _mongoDbService.Users.InsertOneAsync(user);
+            await usersCollection.InsertOneAsync(user);
             return new OkObjectResult(new { message = "Registration successful" });
         }
 
         public async Task<IActionResult> Login(LoginModel login)
         {
-            var user = await _mongoDbService.Users
-                .Find(u => u.Email == login.Email)
-                .FirstOrDefaultAsync();
+            var usersCollection = GetUsersCollection();
+            var user = await usersCollection.Find(u => u.Email == login.Email).FirstOrDefaultAsync();
 
             if (user == null || !VerifyPassword(login.Password, user.PasswordHash))
                 return new UnauthorizedObjectResult(new { message = "Invalid email or password" });
@@ -65,7 +67,7 @@ namespace YourNamespace.Services
 
             user.RefreshToken = refreshToken;
             user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
-            await _mongoDbService.Users.ReplaceOneAsync(u => u.Id == user.Id, user);
+            await usersCollection.ReplaceOneAsync(u => u.Id == user.Id, user);
 
             SetAuthTokenCookie("LocalAccessToken", accessToken);
             SetAuthTokenCookie("LocalRefreshToken", refreshToken);
@@ -78,27 +80,26 @@ namespace YourNamespace.Services
                 lastName = user.LastName
             });
         }
+
         public async Task<IActionResult> Logout()
         {
             var context = _httpContextAccessor.HttpContext;
             if (context == null)
                 return new BadRequestObjectResult(new { message = "Invalid request" });
 
-            // Retrieve the user's refresh token from the cookie
+            var usersCollection = GetUsersCollection();
+
             if (context.Request.Cookies.TryGetValue("LocalRefreshToken", out var refreshToken))
             {
-                // Find the user in the database using the refresh token
-                var user = await _mongoDbService.Users.Find(u => u.RefreshToken == refreshToken).FirstOrDefaultAsync();
+                var user = await usersCollection.Find(u => u.RefreshToken == refreshToken).FirstOrDefaultAsync();
                 if (user != null)
                 {
-                    // Invalidate the refresh token
                     user.RefreshToken = null;
                     user.RefreshTokenExpiryTime = DateTime.UtcNow;
-                    await _mongoDbService.Users.ReplaceOneAsync(u => u.Id == user.Id, user);
+                    await usersCollection.ReplaceOneAsync(u => u.Id == user.Id, user);
                 }
             }
 
-            // Remove all authentication-related cookies
             RemoveAuthTokenCookie("LocalAccessToken");
             RemoveAuthTokenCookie("LocalRefreshToken");
             RemoveAuthTokenCookie("GoogleAccessToken");
@@ -110,18 +111,12 @@ namespace YourNamespace.Services
         private void RemoveAuthTokenCookie(string key)
         {
             var context = _httpContextAccessor.HttpContext;
-            if (context != null)
-            {
-                context.Response.Cookies.Delete(key);
-            }
+            context?.Response.Cookies.Delete(key);
         }
-
 
         public IActionResult InitiateGoogleLogin()
         {
             var redirectUri = _configuration["Google:RedirectUri"];
-
-            // redirectUri = redirectUri.Replace("http://", "https://");
 
             var properties = new AuthenticationProperties
             {
@@ -146,24 +141,21 @@ namespace YourNamespace.Services
             if (string.IsNullOrEmpty(email))
                 return new BadRequestObjectResult(new { message = "Google authentication failed" });
 
-            // Extract Google access and refresh tokens
             var googleAccessToken = authenticateResult.Properties?.GetTokenValue("access_token");
             var googleRefreshToken = authenticateResult.Properties?.GetTokenValue("refresh_token");
 
-            // Generate your local tokens
             var accessToken = _tokenService.GenerateAccessToken(email);
             var refreshToken = _tokenService.GenerateRefreshToken();
 
-            // Store local refresh token in database (for token refresh mechanism)
-            var user = await _mongoDbService.Users.Find(u => u.Email == email).FirstOrDefaultAsync();
+            var usersCollection = GetUsersCollection();
+            var user = await usersCollection.Find(u => u.Email == email).FirstOrDefaultAsync();
             if (user != null)
             {
                 user.RefreshToken = refreshToken;
                 user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
-                await _mongoDbService.Users.ReplaceOneAsync(u => u.Id == user.Id, user);
+                await usersCollection.ReplaceOneAsync(u => u.Id == user.Id, user);
             }
 
-            // Store tokens in cookies
             SetAuthTokenCookie("LocalAccessToken", accessToken);
             SetAuthTokenCookie("LocalRefreshToken", refreshToken);
             SetAuthTokenCookie("GoogleAccessToken", googleAccessToken);
@@ -173,14 +165,9 @@ namespace YourNamespace.Services
                 SetAuthTokenCookie("GoogleRefreshToken", googleRefreshToken);
             }
 
-            // Return all tokens in the response
             return new OkObjectResult(new
             {
                 message = "Google login successful",
-                // googleAccessToken,
-                // googleRefreshToken,
-                // accessToken,
-                // refreshToken,
                 email,
                 name
             });

@@ -27,6 +27,8 @@ builder.Services.AddSingleton(database);
 
 // Register services
 builder.Services.AddScoped<EventService>();
+builder.Services.AddSingleton<TaskService>();
+builder.Services.AddScoped<EventTypeService>();
 builder.Services.AddSingleton<MongoDbService>();
 
 // Add controllers
@@ -36,8 +38,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var app = builder.Build();
-
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll",
@@ -46,6 +46,8 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod() // Allows GET, POST, PUT, DELETE, etc.
             .AllowAnyHeader()); // Allows all headers
 });
+
+var app = builder.Build();
 
 // Enable Swagger in development mode
 if (app.Environment.IsDevelopment())

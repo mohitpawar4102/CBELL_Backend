@@ -7,8 +7,7 @@ namespace YourNamespace.Models
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
-        
+        public string Id { get; set; }
         public required string PasswordHash { get; set; }
         public required string Email { get; set; }
         public string? RefreshToken { get; set; }

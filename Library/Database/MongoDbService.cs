@@ -14,10 +14,6 @@ namespace YourNamespace.Library.Database
             _database = client.GetDatabase(configuration.GetSection("MongoDbSettings")["DatabaseName"]);
         }
 
-        //Its Does not fetch all the users, it provides access to MongoDb collection named "Users"
-         public IMongoCollection<User> Users => _database.GetCollection<User>("Users");
-
-         public IMongoCollection<Event> Events => _database.GetCollection<Event>("EventsMst");
-
+         public IMongoDatabase GetDatabase() => _database;
     }
 }

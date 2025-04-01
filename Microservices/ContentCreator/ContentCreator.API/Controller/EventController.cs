@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace YourNamespace.Controllers
 {
     [ApiController]
-    [Route("api/events")]
+    [Route("api/event")]
     public class EventController : ControllerBase
     {
         private readonly EventService _eventService;
@@ -18,19 +18,19 @@ namespace YourNamespace.Controllers
             _eventService = eventService;
         }
 
-        [HttpPost("create")]
+        [HttpPost("create_event")]
         public Task<IActionResult> CreateEvent([FromBody] EventDto eventDto) => _eventService.CreateEventAsync(eventDto);
 
         [HttpGet("get_all_events")]
         public Task<IActionResult> GetAllEvents() => _eventService.GetAllEventsAsync();
 
-        [HttpGet("{id}")]
+        [HttpGet("get_event/{id}")]
         public Task<IActionResult> GetEventById(string id) => _eventService.GetEventByIdAsync(id);
 
-        [HttpPut("{id}")]
+        [HttpPut("update/{id}")]
         public Task<IActionResult> UpdateEvent(string id, [FromBody] EventDto eventDto) => _eventService.UpdateEventAsync(id, eventDto);
 
-        [HttpDelete("{id}")]
+        [HttpDelete("delete/{id}")]
         public Task<IActionResult> DeleteEvent(string id) => _eventService.DeleteEventAsync(id);
     }
 }

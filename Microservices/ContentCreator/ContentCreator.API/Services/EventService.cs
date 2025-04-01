@@ -18,6 +18,12 @@ namespace YourNamespace.Services
             _mongoDbService = mongoDbService;
         }
 
+        // Method to get the Events collection dynamically
+        private IMongoCollection<Event> GetEventsCollection()
+        {
+            return _mongoDbService.GetDatabase().GetCollection<Event>("EventsMst");
+        }
+
         public async Task<IActionResult> CreateEventAsync(EventDto eventDto)
         {
             if (eventDto == null)
@@ -36,7 +42,7 @@ namespace YourNamespace.Services
                 EventTypeDesc = eventDto.EventTypeDesc,
                 EventDescription = eventDto.EventDescription,
                 LocationDetails = eventDto.LocationDetails,
-                Dignitaries = eventDto.Dignitaries,
+                Coordinators = eventDto.Coordinators,
                 SpecialGuests = eventDto.SpecialGuests,
                 CreatedBy = eventDto.CreatedBy,
                 CreatedOn = DateTime.UtcNow,
@@ -47,8 +53,8 @@ namespace YourNamespace.Services
 
             try
             {
-                await _mongoDbService.Events.InsertOneAsync(newEvent);
-                return new CreatedAtActionResult("CreateEvent", "Event", new { id = newEvent.Id }, newEvent);
+                await GetEventsCollection().InsertOneAsync(newEvent);
+                return new OkObjectResult(new { message = "Event created successfully." });
             }
             catch (Exception ex)
             {
@@ -60,7 +66,7 @@ namespace YourNamespace.Services
         {
             try
             {
-                var events = await _mongoDbService.Events.Find(_ => true).ToListAsync();
+                var events = await GetEventsCollection().Find(e => !e.IsDeleted).ToListAsync();
                 return new OkObjectResult(events);
             }
             catch (Exception ex)
@@ -73,7 +79,7 @@ namespace YourNamespace.Services
         {
             try
             {
-                var eventItem = await _mongoDbService.Events.Find(e => e.Id == id).FirstOrDefaultAsync();
+                var eventItem = await GetEventsCollection().Find(e => e.Id == id && !e.IsDeleted).FirstOrDefaultAsync();
                 if (eventItem == null)
                     return new NotFoundObjectResult(new { message = "Event not found." });
 
@@ -102,16 +108,15 @@ namespace YourNamespace.Services
                 .Set(e => e.EventTypeDesc, eventDto.EventTypeDesc)
                 .Set(e => e.EventDescription, eventDto.EventDescription)
                 .Set(e => e.LocationDetails, eventDto.LocationDetails)
-                .Set(e => e.Dignitaries, eventDto.Dignitaries)
+                .Set(e => e.Coordinators, eventDto.Coordinators)
                 .Set(e => e.SpecialGuests, eventDto.SpecialGuests)
                 .Set(e => e.EventDate, eventDto.EventDate)
                 .Set(e => e.UpdatedBy, eventDto.CreatedBy)
                 .Set(e => e.UpdatedOn, DateTime.UtcNow);
-                // .Set(e => e.OrganizationId, eventDto.OrganizationId);
 
             try
             {
-                var result = await _mongoDbService.Events.UpdateOneAsync(e => e.Id == id, updateDefinition);
+                var result = await GetEventsCollection().UpdateOneAsync(e => e.Id == id, updateDefinition);
                 if (result.MatchedCount == 0)
                     return new NotFoundObjectResult(new { message = "Event not found." });
 
@@ -127,11 +132,16 @@ namespace YourNamespace.Services
         {
             try
             {
-                var result = await _mongoDbService.Events.DeleteOneAsync(e => e.Id == id);
-                if (result.DeletedCount == 0)
+                var updateDefinition = Builders<Event>.Update
+                    .Set(e => e.IsDeleted, true)
+                    .Set(e => e.DeletedOn, DateTime.UtcNow);
+
+                var result = await GetEventsCollection().UpdateOneAsync(e => e.Id == id, updateDefinition);
+
+                if (result.MatchedCount == 0)
                     return new NotFoundObjectResult(new { message = "Event not found." });
 
-                return new OkObjectResult(new { message = "Event deleted successfully." });
+                return new OkObjectResult(new { message = "Event deleted successfully" });
             }
             catch (Exception ex)
             {
