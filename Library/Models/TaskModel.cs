@@ -10,7 +10,7 @@ namespace YourNamespace.Models
         public string Id { get; set; }
         public required string EventId { get; set; }
         public required string TaskTitle { get; set; }
-        public int TaskStatus { get; set; }
+        public string TaskStatus { get; set; }
         public int AssignedTo { get; set; }
         public int CreatedBy { get; set; }
         public int UpdatedBy { get; set; }

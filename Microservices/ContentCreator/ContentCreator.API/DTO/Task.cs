@@ -6,7 +6,7 @@ namespace YourNamespace.DTO
     {
         public string EventId { get; set; }
         public string TaskTitle { get; set; }
-        public int TaskStatus { get; set; }
+        public string TaskStatus { get; set; }
         public int AssignedTo { get; set; }
         public int CreatedBy { get; set; }
         public int UpdatedBy { get; set; }

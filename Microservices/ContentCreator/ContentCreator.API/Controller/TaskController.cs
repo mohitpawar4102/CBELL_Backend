@@ -20,6 +20,12 @@ namespace YourNamespace.Controllers
         [HttpPost("create_task")]
         public Task<IActionResult> CreateTask([FromBody] TaskDTO taskDto) => _taskService.CreateTaskAsync(taskDto);
 
+        [HttpGet("by-event/{eventId}")]
+        public async Task<IActionResult> GetTasksByEventId(string eventId)
+        {
+            return await _taskService.GetTasksByEventIdAsync(eventId);
+        }
+
         [HttpGet("get_all_tasks")]
         public Task<IActionResult> GetAllTasks() => _taskService.GetAllTasksAsync();
 

@@ -3,11 +3,12 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace YourNamespace.Models
 {
+    [BsonIgnoreExtraElements]
     public class OrganizationModel
     {
         [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]  // Handles string ↔ ObjectId conversion automatically
-        public string Id { get; set; }  
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id { get; set; }
 
         public string OrganizationName { get; set; }
         public int OrganizationStatus { get; set; }

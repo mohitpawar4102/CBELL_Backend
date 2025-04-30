@@ -3,10 +3,13 @@ using YourNamespace.Library.Database;
 using YourNamespace.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
+using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using YourNamespace.DTO;
+using YourNamespace.Library.Helpers;
+
 
 namespace YourNamespace.Services
 {
@@ -19,11 +22,20 @@ namespace YourNamespace.Services
             _mongoDbService = mongoDbService;
         }
 
-        // Method to get the TaskMst collection dynamically
         private IMongoCollection<TaskModel> GetTaskCollection()
         {
             return _mongoDbService.GetDatabase().GetCollection<TaskModel>("TasksMst");
         }
+
+        // 🔁 Reusable ID existence checker
+        // private async Task<bool> IdExistsAsync(string collectionName, string id)
+        // {
+        //     if (!ObjectId.TryParse(id, out var objectId))
+        //         return false;
+
+        //     var collection = _mongoDbService.GetDatabase().GetCollection<BsonDocument>(collectionName);
+        //     return await collection.Find(Builders<BsonDocument>.Filter.Eq("_id", objectId)).AnyAsync();
+        // }
 
         public async Task<IActionResult> CreateTaskAsync(TaskDTO taskDto)
         {
@@ -35,6 +47,20 @@ namespace YourNamespace.Services
 
             if (taskDto.DueDate < DateTime.UtcNow)
                 return new BadRequestObjectResult(new { message = "Due date cannot be in the past." });
+
+            // // ✅ Validate OrganizationId
+            // if (string.IsNullOrWhiteSpace(taskDto.OrganizationId) ||
+            //     !await IdExistsAsync("organizationmst", taskDto.OrganizationId))
+            // {
+            //     return new BadRequestObjectResult(new { message = "Invalid or non-existent OrganizationId." });
+            // }
+
+            // // ✅ Validate EventId
+            // if (string.IsNullOrWhiteSpace(taskDto.EventId) ||
+            //     !await IdExistsAsync("eventmst", taskDto.EventId))
+            // {
+            //     return new BadRequestObjectResult(new { message = "Invalid or non-existent EventId." });
+            // }
 
             var task = new TaskModel
             {
@@ -51,7 +77,7 @@ namespace YourNamespace.Services
                 CreativeNumbers = taskDto.CreativeNumbers,
                 ChecklistDetails = taskDto.ChecklistDetails,
                 Description = taskDto.Description,
-                OrganizationId = taskDto.OrganizationId,
+                OrganizationId = taskDto.OrganizationId
             };
 
             try
@@ -65,7 +91,30 @@ namespace YourNamespace.Services
             }
         }
 
-        // Get all tasks (excluding soft-deleted ones)
+        public async Task<IActionResult> GetTasksByEventIdAsync(string eventId)
+        {
+            if (string.IsNullOrWhiteSpace(eventId))
+                return new BadRequestObjectResult(new { message = "Event ID is required." });
+
+            try
+            {
+                var filter = Builders<TaskModel>.Filter.And(
+                    Builders<TaskModel>.Filter.Eq(t => t.EventId, eventId),
+                    Builders<TaskModel>.Filter.Eq(t => t.IsDeleted, false)
+                );
+
+                var tasks = await GetTaskCollection().Find(filter).ToListAsync();
+
+                if (tasks == null || tasks.Count == 0)
+                    return new NotFoundObjectResult(new { message = "No tasks found for the given Event ID." });
+
+                return new OkObjectResult(tasks);
+            }
+            catch (Exception ex)
+            {
+                return new ObjectResult(new { message = $"An error occurred: {ex.Message}" }) { StatusCode = 500 };
+            }
+        }
         public async Task<IActionResult> GetAllTasksAsync()
         {
             try
@@ -79,7 +128,6 @@ namespace YourNamespace.Services
             }
         }
 
-        // Get task by ID (excluding soft-deleted ones)
         public async Task<IActionResult> GetTaskByIdAsync(string id)
         {
             try
@@ -133,7 +181,6 @@ namespace YourNamespace.Services
             }
         }
 
-        // Soft delete method
         public async Task<IActionResult> SoftDeleteTaskAsync(string id)
         {
             try
@@ -156,7 +203,6 @@ namespace YourNamespace.Services
             }
         }
 
-        // Restoring the soft deleted task
         public async Task<IActionResult> RestoreTaskAsync(string id)
         {
             try
@@ -177,6 +223,11 @@ namespace YourNamespace.Services
             {
                 return new ObjectResult(new { message = $"An error occurred: {ex.Message}" }) { StatusCode = 500 };
             }
+        }
+
+        internal async Task<IActionResult> GetDashboardDataAsync()
+        {
+            throw new NotImplementedException();
         }
     }
 }
