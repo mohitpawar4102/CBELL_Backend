@@ -22,6 +22,9 @@ namespace YourNamespace.Controllers
         [HttpPost("login")]
         public Task<IActionResult> Login([FromBody] LoginModel login) => _authService.Login(login);
 
+        [HttpGet("users")]
+        public Task<IActionResult> GetAllUsers() => _authService.GetAllUsers();
+
         [HttpGet("google-login")]
         public IActionResult GoogleLogin() => _authService.InitiateGoogleLogin();
 

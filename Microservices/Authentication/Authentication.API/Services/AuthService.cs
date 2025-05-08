@@ -7,6 +7,7 @@ using System.Security.Claims;
 using YourNamespace.Library.Database;
 using YourNamespace.Models;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 
 namespace YourNamespace.Services
 {
@@ -33,9 +34,24 @@ namespace YourNamespace.Services
         public async Task<IActionResult> Register(RegisterRequest request)
         {
             var usersCollection = GetUsersCollection();
+            var organizationsCollection = _mongoDbService.GetDatabase().GetCollection<BsonDocument>("OrganizationMst");
+
+            // Check if user already exists
             var existingUser = await usersCollection.Find(u => u.Email == request.Email).FirstOrDefaultAsync();
             if (existingUser != null)
                 return new BadRequestObjectResult(new { message = "User already exists" });
+
+            // Lookup Organization by code
+            var organization = await organizationsCollection.Find(new BsonDocument
+    {
+        { "OrganizationCode", request.OrganizationCode },
+        { "IsDeleted", false }
+    }).FirstOrDefaultAsync();
+
+            if (organization == null)
+                return new BadRequestObjectResult(new { message = "Invalid organization code." });
+
+            var organizationId = organization["_id"].AsObjectId.ToString(); // get ObjectId as string
 
             var user = new User
             {
@@ -43,17 +59,18 @@ namespace YourNamespace.Services
                 FirstName = request.FirstName,
                 LastName = request.LastName,
                 PasswordHash = HashPassword(request.Password),
-                OrganizationId = request.OrganizationId,
+                OrganizationCode = request.OrganizationCode,
+                OrganizationId = organizationId, // set from organization _id
                 MFA = 1,
                 UserStatus = 1,
                 CreatedOn = DateTime.UtcNow,
-                UpdatedOn = DateTime.UtcNow
+                UpdatedOn = DateTime.UtcNow,
             };
 
             await usersCollection.InsertOneAsync(user);
+
             return new OkObjectResult(new { message = "Registration successful" });
         }
-
         public async Task<IActionResult> Login(LoginModel login)
         {
             var usersCollection = GetUsersCollection();
@@ -77,8 +94,32 @@ namespace YourNamespace.Services
                 message = "Login successful",
                 email = user.Email,
                 firstName = user.FirstName,
-                lastName = user.LastName
+                lastName = user.LastName,
+                organizationId = user.OrganizationId,
             });
+        }
+
+        public async Task<IActionResult> GetAllUsers()
+        {
+            var usersCollection = GetUsersCollection();
+
+            var users = await usersCollection.Find(_ => true).ToListAsync();
+
+            var response = users.Select(u => new
+            {
+                u.Id,
+                u.Email,
+                u.FirstName,
+                u.LastName,
+                u.OrganizationCode,
+                u.MFA,
+                u.UserStatus,
+                u.CreatedOn,
+                u.UpdatedOn,
+                u.OrganizationId
+            });
+
+            return new OkObjectResult(response);
         }
 
         public async Task<IActionResult> Logout()

@@ -12,5 +12,7 @@ namespace YourNamespace.DTOs
         public string OrganizationType { get; set; }
         public bool IsDeleted { get; set; }
         public DateTime? DeletedOn { get; set; }
+        public string OrganizationCode { get; set; }
+
     }
 }

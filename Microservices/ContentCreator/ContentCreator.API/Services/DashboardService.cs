@@ -4,6 +4,7 @@ using YourNamespace.DTO;
 using YourNamespace.Library.Database;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
+using Library.Models;
 
 namespace YourNamespace.Services
 {
@@ -32,9 +33,8 @@ namespace YourNamespace.Services
                 var activeEventsCount = await GetActiveEventsCountAsync();
                 var pendingTasksCount = await GetPendingTasksCountAsync();
                 var upcomingDeadlinesCount = await GetUpcomingDeadlineTasksCountAsync();
-                var organizationDict = await GetOrganizationDictionaryAsync();
-                var eventsData = await GetEventsDataAsync(organizationDict);
-                var tasksData = await GetTasksDataAsync(organizationDict);
+                var eventsData = await GetEventsDataAsync();
+                var tasksData = await GetTasksDataAsync();
 
                 return new OkObjectResult(new
                 {
@@ -79,50 +79,110 @@ namespace YourNamespace.Services
             return (int)await GetTasksCollection().CountDocumentsAsync(filter);
         }
 
-        private async Task<Dictionary<string, string>> GetOrganizationDictionaryAsync()
+        private async Task<List<object>> GetEventsDataAsync()
         {
-            var orgs = await GetOrganizationsCollection().Find(o => !o.IsDeleted).ToListAsync();
-            return orgs.ToDictionary(o => o.Id, o => o.OrganizationName);
-        }
-
-        private async Task<List<object>> GetEventsDataAsync(Dictionary<string, string> organizationDict)
-        {
-            var events = await GetEventsCollection()
-                .Find(e => !e.IsDeleted)
-                .ToListAsync();
-
-            var result = events.Select(e => new
+            var pipeline = new[]
             {
-                e.EventName,
-                e.EventDate,
-                OrganizationName = organizationDict.ContainsKey(e.OrganizationId) ? organizationDict[e.OrganizationId] : "Unknown Organization"
-            });
+        new BsonDocument("$match", new BsonDocument("IsDeleted", false)),
 
-            return result.Cast<object>().ToList();
-        }
+        // Convert string OrganizationId to ObjectId
+        new BsonDocument("$addFields", new BsonDocument("OrganizationObjectId",
+            new BsonDocument("$toObjectId", "$OrganizationId"))),
 
-        private async Task<List<object>> GetTasksDataAsync(Dictionary<string, string> organizationDict)
+        new BsonDocument("$lookup", new BsonDocument
         {
-            var tasks = await GetTasksCollection()
-                .Find(t => !t.IsDeleted)
+            { "from", "OrganizationMst" },
+            { "localField", "OrganizationObjectId" },
+            { "foreignField", "_id" },
+            { "as", "Organization" }
+        }),
+        new BsonDocument("$unwind", new BsonDocument
+        {
+            { "path", "$Organization" },
+            { "preserveNullAndEmptyArrays", true }
+        }),
+        new BsonDocument("$project", new BsonDocument
+        {
+            { "EventName", 1 },
+            { "EventDate", 1 },
+            { "OrganizationName", "$Organization.OrganizationName" }
+        })
+    };
+
+            var result = await GetEventsCollection()
+                .Aggregate<BsonDocument>(pipeline)
                 .ToListAsync();
 
-            var eventIds = tasks.Select(t => t.EventId).Distinct().ToList();
-            var events = await GetEventsCollection()
-                .Find(e => eventIds.Contains(e.Id))
-                .ToListAsync();
-
-            var eventDict = events.ToDictionary(e => e.Id, e => e.EventName);
-
-            var taskDtos = tasks.Select(t => new
+            return result.Select(doc => new
             {
-                t.TaskTitle,
-                t.DueDate,
-                EventName = eventDict.ContainsKey(t.EventId) ? eventDict[t.EventId] : "Unknown Event",
-                OrganizationName = organizationDict.ContainsKey(t.OrganizationId) ? organizationDict[t.OrganizationId] : "Unknown Organization"
-            });
-
-            return taskDtos.Cast<object>().ToList();
+                EventName = doc["EventName"].AsString,
+                EventDate = doc["EventDate"].ToUniversalTime(),
+                OrganizationName = doc.TryGetValue("OrganizationName", out var orgName) ? orgName.AsString : null
+            }).Cast<object>().ToList();
         }
+
+
+        private async Task<List<object>> GetTasksDataAsync()
+        {
+            var pipeline = new[]
+            {
+        new BsonDocument("$match", new BsonDocument("IsDeleted", false)),
+
+        // Convert EventId and OrganizationId to ObjectIds
+        new BsonDocument("$addFields", new BsonDocument
+        {
+            { "EventObjectId", new BsonDocument("$toObjectId", "$EventId") },
+            { "OrganizationObjectId", new BsonDocument("$toObjectId", "$OrganizationId") }
+        }),
+
+        new BsonDocument("$lookup", new BsonDocument
+        {
+            { "from", "EventsMst" },
+            { "localField", "EventObjectId" },
+            { "foreignField", "_id" },
+            { "as", "Event" }
+        }),
+        new BsonDocument("$unwind", new BsonDocument
+        {
+            { "path", "$Event" },
+            { "preserveNullAndEmptyArrays", true }
+        }),
+
+        new BsonDocument("$lookup", new BsonDocument
+        {
+            { "from", "OrganizationMst" },
+            { "localField", "OrganizationObjectId" },
+            { "foreignField", "_id" },
+            { "as", "Organization" }
+        }),
+        new BsonDocument("$unwind", new BsonDocument
+        {
+            { "path", "$Organization" },
+            { "preserveNullAndEmptyArrays", true }
+        }),
+
+        new BsonDocument("$project", new BsonDocument
+        {
+            { "TaskTitle", 1 },
+            { "DueDate", 1 },
+            { "EventName", "$Event.EventName" },
+            { "OrganizationName", "$Organization.OrganizationName" }
+        })
+    };
+
+            var result = await GetTasksCollection()
+                .Aggregate<BsonDocument>(pipeline)
+                .ToListAsync();
+
+            return result.Select(doc => new
+            {
+                TaskTitle = doc["TaskTitle"].AsString,
+                DueDate = doc["DueDate"].ToUniversalTime(),
+                EventName = doc.TryGetValue("EventName", out var evName) ? evName.AsString : null,
+                OrganizationName = doc.TryGetValue("OrganizationName", out var orgName) ? orgName.AsString : null
+            }).Cast<object>().ToList();
+        }
+        
+
     }
 }

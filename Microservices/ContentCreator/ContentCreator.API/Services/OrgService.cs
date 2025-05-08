@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 using System;
 using System.Threading.Tasks;
+using Library.Models;
 
 namespace YourNamespace.Services
 {
@@ -30,11 +31,20 @@ namespace YourNamespace.Services
             if (string.IsNullOrWhiteSpace(organizationDto.OrganizationName))
                 return new BadRequestObjectResult(new { message = "Organization name is required." });
 
+            // Check for duplicate OrganizationCode
+            var existingOrgWithCode = await GetOrganizationCollection()
+                .Find(o => o.OrganizationCode == organizationDto.OrganizationCode && o.IsDeleted == false)
+                .FirstOrDefaultAsync();
+
+            if (existingOrgWithCode != null)
+                return new ConflictObjectResult(new { message = "Organization code already exists." });
+
             var organization = new OrganizationModel
             {
                 OrganizationName = organizationDto.OrganizationName,
                 OrganizationStatus = organizationDto.OrganizationStatus,
                 OrganizationType = organizationDto.OrganizationType,
+                OrganizationCode = organizationDto.OrganizationCode,
                 CreatedOn = DateTime.UtcNow,
                 UpdatedOn = DateTime.UtcNow,
                 IsDeleted = false
@@ -50,6 +60,7 @@ namespace YourNamespace.Services
                 return new ObjectResult(new { message = $"An error occurred: {ex.Message}" }) { StatusCode = 500 };
             }
         }
+
 
         public async Task<IActionResult> GetOrganizationByIdAsync(string id)
         {
@@ -94,12 +105,21 @@ namespace YourNamespace.Services
             if (organizationDto == null)
                 return new BadRequestObjectResult(new { message = "Organization data is required." });
 
+            // Check if OrganizationCode is already used by another organization
+            var existingOrgWithCode = await GetOrganizationCollection()
+                .Find(o => o.OrganizationCode == organizationDto.OrganizationCode && o.Id != id && o.IsDeleted == false)
+                .FirstOrDefaultAsync();
+
+            if (existingOrgWithCode != null)
+                return new ConflictObjectResult(new { message = "Organization code already exists for another organization." });
+
+
             var updateDefinition = Builders<OrganizationModel>.Update
                 .Set(o => o.OrganizationName, organizationDto.OrganizationName)
                 .Set(o => o.OrganizationStatus, organizationDto.OrganizationStatus)
                 .Set(o => o.OrganizationType, organizationDto.OrganizationType)
-                .Set(o => o.UpdatedOn, DateTime.UtcNow);
-
+                .Set(o => o.UpdatedOn, DateTime.UtcNow)
+                .Set(o => o.OrganizationCode, organizationDto.OrganizationCode);
             try
             {
                 // Check if the organization is not deleted before updating

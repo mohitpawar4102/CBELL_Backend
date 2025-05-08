@@ -6,10 +6,10 @@ using MongoDB.Driver;
 using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using YourNamespace.DTO;
 using YourNamespace.Library.Helpers;
-
 
 namespace YourNamespace.Services
 {
@@ -27,16 +27,6 @@ namespace YourNamespace.Services
             return _mongoDbService.GetDatabase().GetCollection<TaskModel>("TasksMst");
         }
 
-        // 🔁 Reusable ID existence checker
-        // private async Task<bool> IdExistsAsync(string collectionName, string id)
-        // {
-        //     if (!ObjectId.TryParse(id, out var objectId))
-        //         return false;
-
-        //     var collection = _mongoDbService.GetDatabase().GetCollection<BsonDocument>(collectionName);
-        //     return await collection.Find(Builders<BsonDocument>.Filter.Eq("_id", objectId)).AnyAsync();
-        // }
-
         public async Task<IActionResult> CreateTaskAsync(TaskDTO taskDto)
         {
             if (taskDto == null)
@@ -48,26 +38,13 @@ namespace YourNamespace.Services
             if (taskDto.DueDate < DateTime.UtcNow)
                 return new BadRequestObjectResult(new { message = "Due date cannot be in the past." });
 
-            // // ✅ Validate OrganizationId
-            // if (string.IsNullOrWhiteSpace(taskDto.OrganizationId) ||
-            //     !await IdExistsAsync("organizationmst", taskDto.OrganizationId))
-            // {
-            //     return new BadRequestObjectResult(new { message = "Invalid or non-existent OrganizationId." });
-            // }
-
-            // // ✅ Validate EventId
-            // if (string.IsNullOrWhiteSpace(taskDto.EventId) ||
-            //     !await IdExistsAsync("eventmst", taskDto.EventId))
-            // {
-            //     return new BadRequestObjectResult(new { message = "Invalid or non-existent EventId." });
-            // }
-
+            // For CreateTaskAsync
             var task = new TaskModel
             {
                 EventId = taskDto.EventId,
                 TaskTitle = taskDto.TaskTitle,
                 TaskStatus = taskDto.TaskStatus,
-                AssignedTo = taskDto.AssignedTo,
+                AssignedTo = taskDto.AssignedTo,  // Handle list of user IDs
                 CreatedBy = taskDto.CreatedBy,
                 UpdatedBy = taskDto.CreatedBy,
                 CreativeType = taskDto.CreativeType,
@@ -79,6 +56,7 @@ namespace YourNamespace.Services
                 Description = taskDto.Description,
                 OrganizationId = taskDto.OrganizationId
             };
+
 
             try
             {
@@ -115,11 +93,12 @@ namespace YourNamespace.Services
                 return new ObjectResult(new { message = $"An error occurred: {ex.Message}" }) { StatusCode = 500 };
             }
         }
+
         public async Task<IActionResult> GetAllTasksAsync()
         {
             try
             {
-                var tasks = await GetTaskCollection().Find(t => !t.IsDeleted).ToListAsync();
+                var tasks = await AggregateTasksAsync();
                 return new OkObjectResult(tasks);
             }
             catch (Exception ex)
@@ -132,17 +111,117 @@ namespace YourNamespace.Services
         {
             try
             {
-                var task = await GetTaskCollection().Find(t => t.Id == id && !t.IsDeleted).FirstOrDefaultAsync();
-                if (task == null)
-                    return new NotFoundObjectResult(new { message = "Task not found." });
+                if (!ObjectId.TryParse(id, out ObjectId objectId))
+                {
+                    return new BadRequestObjectResult(new { message = "Invalid ID format." });
+                }
 
-                return new OkObjectResult(task);
+                // Use a proper BsonDocument filter (not Filter<T>) for the aggregation pipeline
+                var filter = new BsonDocument
+        {
+            { "_id", objectId },
+            { "IsDeleted", false }
+        };
+
+                var tasks = await AggregateTasksAsync(filter);
+
+                if (tasks == null || tasks.Count == 0)
+                {
+                    return new NotFoundObjectResult(new { message = "Task not found." });
+                }
+
+                return new OkObjectResult(tasks.First());
             }
             catch (Exception ex)
             {
                 return new ObjectResult(new { message = $"An error occurred: {ex.Message}" }) { StatusCode = 500 };
             }
         }
+
+
+
+        private async Task<List<TaskWithUserDto>> AggregateTasksAsync(BsonDocument? filter = null)
+        {
+            var db = _mongoDbService.GetDatabase();
+            var taskCollection = db.GetCollection<BsonDocument>("TasksMst");
+
+            var pipeline = new List<BsonDocument>
+{
+    new BsonDocument("$match", filter ?? new BsonDocument("IsDeleted", false)),
+
+    new BsonDocument("$addFields", new BsonDocument("AssignedToObjIds",
+        new BsonDocument("$map", new BsonDocument
+        {
+            { "input", "$AssignedTo" },
+            { "as", "userId" },
+            { "in", new BsonDocument("$toObjectId", "$$userId") }
+        }))),
+
+    new BsonDocument("$lookup", new BsonDocument
+    {
+        { "from", "Users" },
+        { "localField", "AssignedToObjIds" },
+        { "foreignField", "_id" },
+        { "as", "AssignedUsers" }
+    }),
+
+    new BsonDocument("$addFields", new BsonDocument("AssignedToFullNames",
+        new BsonDocument("$map", new BsonDocument
+        {
+            { "input", "$AssignedUsers" },
+            { "as", "user" },
+            { "in", new BsonDocument("$concat", new BsonArray { "$$user.FirstName", " ", "$$user.LastName" }) }
+        }))),
+
+    new BsonDocument("$project", new BsonDocument
+    {
+        { "Id", "$_id" },
+        { "TaskTitle", 1 },
+        { "TaskStatus", 1 },
+        { "AssignedTo", "$AssignedToFullNames" },
+        { "CreatedBy", 1 },
+        { "UpdatedBy", 1 },
+        { "CreativeType", 1 },
+        { "DueDate", 1 },
+        { "CreatedOn", 1 },
+        { "UpdatedOn", 1 },
+        { "Description", 1 },
+        { "OrganizationId", 1 },
+        { "EventId", 1 },
+        { "CreativeNumbers", 1 },
+        { "ChecklistDetails", 1 }
+    })
+};
+
+
+            var result = await taskCollection.Aggregate<BsonDocument>(pipeline).ToListAsync();
+
+            return result.Select(doc => new TaskWithUserDto
+            {
+                Id = doc.GetValue("Id").ToString(),
+                TaskTitle = doc.GetValue("TaskTitle", "").AsString,
+                TaskStatus = doc.GetValue("TaskStatus", "").AsString,
+                AssignedTo = doc.TryGetValue("AssignedTo", out var assignedToVal) && assignedToVal.IsBsonArray
+                    ? assignedToVal.AsBsonArray.Select(x => x.AsString).ToList()
+                    : new List<string>(),
+
+
+                CreatedBy = doc.GetValue("CreatedBy", 0).ToInt32(),
+                UpdatedBy = doc.GetValue("UpdatedBy", 0).ToInt32(),
+                CreativeType = doc.GetValue("CreativeType", "").AsString,
+                DueDate = doc.GetValue("DueDate").ToUniversalTime(),
+                CreatedOn = doc.GetValue("CreatedOn").ToUniversalTime(),
+                UpdatedOn = doc.GetValue("UpdatedOn").ToUniversalTime(),
+                Description = doc.GetValue("Description", "").AsString,
+                OrganizationId = doc.GetValue("OrganizationId", "").AsString,
+                EventId = doc.GetValue("EventId", "").AsString,
+                CreativeNumbers = doc.GetValue("CreativeNumbers", 0).ToInt32(),
+                ChecklistDetails = doc.Contains("ChecklistDetails") && doc["ChecklistDetails"].IsBsonArray
+                    ? doc["ChecklistDetails"].AsBsonArray.Select(x => x.AsString).ToList()
+                    : new List<string>() // Fallback to an empty list if ChecklistDetails is missing or not an array
+            }).ToList();
+        }
+
 
         public async Task<IActionResult> UpdateTaskAsync(string id, TaskDTO taskDto)
         {

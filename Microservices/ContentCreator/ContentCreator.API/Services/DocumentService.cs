@@ -7,6 +7,7 @@ using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
 using System;
 using System.Threading.Tasks;
+using YourNamespace.DTO;
 
 namespace YourNamespace.Services
 {
@@ -68,7 +69,7 @@ namespace YourNamespace.Services
             }
         }
 
-        public async Task<IActionResult> StreamDocumentAsync(string documentId)
+        public async Task<IActionResult> StreamDocumentAsync(string documentId, HttpResponse response)
         {
             if (!ObjectId.TryParse(documentId, out var objectId))
                 return new BadRequestObjectResult(new { message = "Invalid document ID format." });
@@ -82,10 +83,13 @@ namespace YourNamespace.Services
                 var stream = await _gridFs.OpenDownloadStreamAsync(document.FileId);
                 var contentType = document.ContentType ?? "application/octet-stream";
 
-                return new FileStreamResult(stream, contentType)
+                // Set the Content-Disposition header to enable inline viewing
+                response.Headers.Append("Content-Disposition", new Microsoft.Net.Http.Headers.ContentDispositionHeaderValue("inline")
                 {
-                    FileDownloadName = document.FileName
-                };
+                    FileName = document.FileName
+                }.ToString());
+
+                return new FileStreamResult(stream, contentType);
             }
             catch (Exception ex)
             {
@@ -143,5 +147,36 @@ namespace YourNamespace.Services
                 return new ObjectResult(new { message = $"Error downloading file: {ex.Message}" }) { StatusCode = 500 };
             }
         }
+        public async Task<IActionResult> GetAllGridFsMetadataAsync()
+        {
+            try
+            {
+                var database = _documents.Database;
+                var filesCollection = database.GetCollection<BsonDocument>("documents.files");
+
+                var files = await filesCollection.Find(FilterDefinition<BsonDocument>.Empty).ToListAsync();
+
+                var metadataList = files.Select(f => new
+                {
+                    Id = f.GetValue("_id").ToString(),
+                    Filename = f.GetValue("filename", "").AsString,
+                    Length = f.GetValue("length", 0).ToInt64(),
+                    ChunkSize = f.GetValue("chunkSize", 0).ToInt32(),
+                    UploadDate = f.GetValue("uploadDate", BsonNull.Value).ToUniversalTime(),
+                    Metadata = new
+                    {
+                        ContentType = f.GetValue("metadata")?.AsBsonDocument?.GetValue("contentType", "").AsString ?? "",
+                        Description = f.GetValue("metadata")?.AsBsonDocument?.GetValue("description", "").AsString ?? ""
+                    }
+                });
+
+                return new OkObjectResult(metadataList);
+            }
+            catch (Exception ex)
+            {
+                return new ObjectResult(new { message = $"Error fetching metadata: {ex.Message}" }) { StatusCode = 500 };
+            }
+        }
+
     }
 }

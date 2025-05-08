@@ -22,7 +22,7 @@ namespace YourNamespace.Controllers
 
         [HttpGet("view/{id}")]
         public Task<IActionResult> ViewDocument(string id) =>
-            _documentService.StreamDocumentAsync(id);
+        _documentService.StreamDocumentAsync(id, Response);
 
         [HttpDelete("delete/{id}")]
         public Task<IActionResult> DeleteDocument(string id) =>
@@ -33,6 +33,10 @@ namespace YourNamespace.Controllers
         {
             return _documentService.DownloadDocumentAsync(documentId);
         }
-
+        [HttpGet("metadata")]
+        public async Task<IActionResult> GetAllGridFsMetadata()
+        {
+            return await _documentService.GetAllGridFsMetadataAsync();
+        }
     }
 }

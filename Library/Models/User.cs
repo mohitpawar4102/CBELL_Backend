@@ -15,6 +15,7 @@ namespace YourNamespace.Models
         public required string FirstName { get; set; }
         public required string LastName { get; set; }
         public int MFA { get; set; } = 1;
+        public string OrganizationCode { get; set; }
         public string OrganizationId { get; set; }
         public int UserStatus { get; set; } = 1;
         public DateTime CreatedOn { get; set; } = DateTime.UtcNow;

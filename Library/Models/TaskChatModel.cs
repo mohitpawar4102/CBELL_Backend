@@ -17,12 +17,12 @@ public class TaskChatModel
 public class ThreadDetail
 {
     [BsonRepresentation(BsonType.ObjectId)]
-    public string ThreadId { get; set; }
+    public string ConversationId { get; set; } = ObjectId.GenerateNewId().ToString();
     public DateTime CreatedOn { get; set; }
     public DateTime UpdatedOn { get; set; }
     public string UserId { get; set; }
     public string ConversationText { get; set; }
-    
+
     [BsonRepresentation(BsonType.ObjectId)]
     public List<string> DocumentId { get; set; } = new();
 }

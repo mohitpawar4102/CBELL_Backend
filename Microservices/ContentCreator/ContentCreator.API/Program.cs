@@ -33,6 +33,7 @@ builder.Services.AddScoped<OrganizationService>();
 builder.Services.AddScoped<DocumentService>();
 builder.Services.AddScoped<DashboardService>();
 builder.Services.AddScoped<ChatThreadService>();
+builder.Services.AddScoped<DocumentDetailsService>();
 builder.Services.AddSingleton<MongoDbService>();
 
 // Add controllers

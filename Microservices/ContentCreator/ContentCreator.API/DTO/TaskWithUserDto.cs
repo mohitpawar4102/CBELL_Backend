@@ -1,24 +1,21 @@
-using System.Text.Json.Serialization;
-
-public class TaskDTO
+public class TaskWithUserDto
 {
+    public string Id { get; set; }
     public string EventId { get; set; }
     public string TaskTitle { get; set; }
     public string TaskStatus { get; set; }
 
-    // Change: Now supports a list of user IDs for AssignedTo
+    // Now handles multiple assigned user names
     public List<string> AssignedTo { get; set; } = new List<string>();
+
     public int CreatedBy { get; set; }
     public int UpdatedBy { get; set; }
     public string CreativeType { get; set; }
     public DateTime DueDate { get; set; }
+    public DateTime CreatedOn { get; set; }
+    public DateTime UpdatedOn { get; set; }
     public int CreativeNumbers { get; set; }
-    public string? OrganizationId { get; set; }
-
-    [JsonPropertyName("ChecklistDetails")]
-    public List<string> ChecklistDetails { get; set; } = new List<string>();
-
+    public List<string> ChecklistDetails { get; set; }
     public string Description { get; set; }
-    public bool IsDeleted { get; set; } = false;
-    public DateTime? DeletedOn { get; set; }
+    public string? OrganizationId { get; set; }
 }

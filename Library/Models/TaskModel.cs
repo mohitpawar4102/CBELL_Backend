@@ -11,7 +11,7 @@ namespace YourNamespace.Models
         public required string EventId { get; set; }
         public required string TaskTitle { get; set; }
         public string TaskStatus { get; set; }
-        public int AssignedTo { get; set; }
+        public List<string> AssignedTo { get; set; } = new List<string>();
         public int CreatedBy { get; set; }
         public int UpdatedBy { get; set; }
         public string? CreativeType { get; set; }
@@ -26,5 +26,6 @@ namespace YourNamespace.Models
         public string OrganizationId { get; set; }
         public bool IsDeleted { get; set; } = false;
         public DateTime? DeletedOn { get; set; }
+
     }
 }
