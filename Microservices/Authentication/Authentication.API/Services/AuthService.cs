@@ -92,6 +92,7 @@ namespace YourNamespace.Services
             return new OkObjectResult(new
             {
                 message = "Login successful",
+                userId = user.Id, 
                 email = user.Email,
                 firstName = user.FirstName,
                 lastName = user.LastName,

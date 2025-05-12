@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using YourNamespace.Services;
 using YourNamespace.DTO;
+using YourNamespace.DTOs;
 
 namespace YourNamespace.Controllers
 {

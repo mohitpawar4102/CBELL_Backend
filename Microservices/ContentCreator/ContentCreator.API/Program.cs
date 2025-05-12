@@ -4,6 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
+using MongoDB.Bson.Serialization.Conventions;  // Import the necessary namespace for convention
+using MongoDB.Bson;  // Import for GuidRepresentation
 using YourNamespace.Services;
 using YourNamespace.Library.Database;
 

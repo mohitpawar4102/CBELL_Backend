@@ -121,7 +121,6 @@ namespace YourNamespace.Services
             }).Cast<object>().ToList();
         }
 
-
         private async Task<List<object>> GetTasksDataAsync()
         {
             var pipeline = new[]
