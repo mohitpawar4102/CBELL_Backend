@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "RDYvX9xjCys=",
+  "dgSpecHash": "pOUseTpRPD4=",
   "success": true,
-  "projectFilePath": "C:\\Users\\TUF Gaming\\OneDrive\\Desktop\\Candent Projects\\CBELL_Candent\\MicroServices\\ContentCreator\\ContentCreator.API\\ContentCreator.API.csproj",
+  "projectFilePath": "C:\\Users\\TUF Gaming\\OneDrive\\Desktop\\Candent Projects\\CBELL_Candent\\Microservices\\ContentCreator\\ContentCreator.API\\ContentCreator.API.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\TUF Gaming\\.nuget\\packages\\dnsclient\\1.6.1\\dnsclient.1.6.1.nupkg.sha512",
     "C:\\Users\\TUF Gaming\\.nuget\\packages\\microsoft.aspnetcore.openapi\\9.0.0\\microsoft.aspnetcore.openapi.9.0.0.nupkg.sha512",
