@@ -32,3 +32,14 @@ C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Gateway\APIG
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Gateway\APIGateway\obj\Debug\net9.0\APIGateway.pdb
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Gateway\APIGateway\obj\Debug\net9.0\APIGateway.genruntimeconfig.cache
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Gateway\APIGateway\obj\Debug\net9.0\ref\APIGateway.dll
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Gateway\APIGateway\bin\Debug\net9.0\ocelot.json
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Gateway\APIGateway\bin\Debug\net9.0\FluentValidation.dll
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Gateway\APIGateway\bin\Debug\net9.0\IPAddressRange.dll
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Gateway\APIGateway\bin\Debug\net9.0\Microsoft.AspNetCore.JsonPatch.dll
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Gateway\APIGateway\bin\Debug\net9.0\Microsoft.AspNetCore.MiddlewareAnalysis.dll
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Gateway\APIGateway\bin\Debug\net9.0\Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Gateway\APIGateway\bin\Debug\net9.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Gateway\APIGateway\bin\Debug\net9.0\Microsoft.Extensions.DiagnosticAdapter.dll
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Gateway\APIGateway\bin\Debug\net9.0\Newtonsoft.Json.dll
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Gateway\APIGateway\bin\Debug\net9.0\Newtonsoft.Json.Bson.dll
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Gateway\APIGateway\bin\Debug\net9.0\Ocelot.dll
