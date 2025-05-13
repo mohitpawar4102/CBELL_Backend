@@ -76,12 +76,13 @@ namespace YourNamespace.Services
 
             try
             {
-                var filter = Builders<TaskModel>.Filter.And(
-                    Builders<TaskModel>.Filter.Eq(t => t.EventId, eventId),
-                    Builders<TaskModel>.Filter.Eq(t => t.IsDeleted, false)
-                );
+                var filter = new BsonDocument
+        {
+            { "EventId", eventId },
+            { "IsDeleted", false }
+        };
 
-                var tasks = await GetTaskCollection().Find(filter).ToListAsync();
+                var tasks = await AggregateTasksAsync(filter);
 
                 if (tasks == null || tasks.Count == 0)
                     return new NotFoundObjectResult(new { message = "No tasks found for the given Event ID." });
@@ -93,6 +94,7 @@ namespace YourNamespace.Services
                 return new ObjectResult(new { message = $"An error occurred: {ex.Message}" }) { StatusCode = 500 };
             }
         }
+
 
         public async Task<IActionResult> GetAllTasksAsync()
         {

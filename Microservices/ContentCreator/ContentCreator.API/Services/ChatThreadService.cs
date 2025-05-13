@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using YourNamespace.DTOs;
+using System.Xml;
 
 namespace YourNamespace.Services
 {
@@ -30,6 +31,7 @@ namespace YourNamespace.Services
             var thread = new ThreadDetail
             {
                 UserId = dto.UserId,
+                UserName = dto.UserName,
                 ConversationText = dto.ConversationText,
                 DocumentId = dto.DocumentId
             };
