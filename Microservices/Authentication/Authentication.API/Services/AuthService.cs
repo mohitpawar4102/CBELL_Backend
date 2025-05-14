@@ -79,7 +79,7 @@ namespace YourNamespace.Services
             if (user == null || !VerifyPassword(login.Password, user.PasswordHash))
                 return new UnauthorizedObjectResult(new { message = "Invalid email or password" });
 
-            var accessToken = _tokenService.GenerateAccessToken(user.Email);
+            var accessToken = _tokenService.GenerateAccessToken(user); // Pass full user object
             var refreshToken = _tokenService.GenerateRefreshToken();
 
             user.RefreshToken = refreshToken;
@@ -92,11 +92,12 @@ namespace YourNamespace.Services
             return new OkObjectResult(new
             {
                 message = "Login successful",
-                userId = user.Id, 
+                userId = user.Id,
                 email = user.Email,
                 firstName = user.FirstName,
                 lastName = user.LastName,
                 organizationId = user.OrganizationId,
+                accessToken  = accessToken // Return token in response for API clients
             });
         }
 
@@ -186,17 +187,17 @@ namespace YourNamespace.Services
             var googleAccessToken = authenticateResult.Properties?.GetTokenValue("access_token");
             var googleRefreshToken = authenticateResult.Properties?.GetTokenValue("refresh_token");
 
-            var accessToken = _tokenService.GenerateAccessToken(email);
-            var refreshToken = _tokenService.GenerateRefreshToken();
-
             var usersCollection = GetUsersCollection();
             var user = await usersCollection.Find(u => u.Email == email).FirstOrDefaultAsync();
-            if (user != null)
+
+            if (user == null)
             {
-                user.RefreshToken = refreshToken;
-                user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
-                await usersCollection.ReplaceOneAsync(u => u.Id == user.Id, user);
+                // Handle case where user doesn't exist in your system
+                return new BadRequestObjectResult(new { message = "User not registered" });
             }
+
+            var accessToken = _tokenService.GenerateAccessToken(user); // Pass user object instead of just email
+            var refreshToken = _tokenService.GenerateRefreshToken();
 
             SetAuthTokenCookie("LocalAccessToken", accessToken);
             SetAuthTokenCookie("LocalRefreshToken", refreshToken);
@@ -223,9 +224,10 @@ namespace YourNamespace.Services
                 context?.Response.Cookies.Append(key, value, new CookieOptions
                 {
                     HttpOnly = true,
-                    Secure = true,
-                    SameSite = SameSiteMode.Strict,
-                    Expires = DateTime.UtcNow.AddDays(7)
+                    Secure = false,  // Change to false for HTTP localhost
+                    SameSite = SameSiteMode.Lax,  // Try Lax instead of Strict for testing
+                    Expires = DateTime.UtcNow.AddDays(7),
+                     Path = "/",
                 });
             }
         }

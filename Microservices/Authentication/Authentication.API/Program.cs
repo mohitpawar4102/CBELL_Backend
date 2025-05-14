@@ -31,16 +31,17 @@ builder.Services.AddSingleton(database);
 // Register services in DI container
 builder.Services.AddScoped<TokenService>(); // TokenService for JWT generation
 builder.Services.AddScoped<AuthService>();  // Register AuthService for authentication logic
-builder.Services.AddHttpContextAccessor();  // Required for IHttpContextAccessor
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<MongoDbService>();
 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll",
         builder => builder
-            .AllowAnyOrigin() // Allows requests from any domain (use carefully in production)
-            .AllowAnyMethod() // Allows GET, POST, PUT, DELETE, etc.
-            .AllowAnyHeader()); // Allows all headers
+            .WithOrigins("http://localhost:5002", "http://localhost:3000") // Specific origins instead of AllowAnyOrigin
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials()); // Required for cookies
 });
 // Authentication and Authorization configuration
 builder.Services.AddAuthentication(options =>
@@ -74,7 +75,7 @@ builder.Services.AddAuthentication(options =>
     {
         OnMessageReceived = context =>
         {
-            var tokenFromCookie = context.Request.Cookies["AuthToken"];
+            var tokenFromCookie = context.Request.Cookies["LocalAccessToken"];
             if (!string.IsNullOrEmpty(tokenFromCookie))
             {
                 context.Token = tokenFromCookie;
@@ -138,7 +139,7 @@ if (app.Environment.IsDevelopment())
 
 // Configure the middleware pipeline
 app.UseCors("AllowAll");
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
