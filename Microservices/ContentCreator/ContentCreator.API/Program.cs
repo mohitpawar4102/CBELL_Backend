@@ -6,13 +6,9 @@ using YourNamespace.Services;
 using YourNamespace.Library.Database;
 using YourNamespace.Models;
 using System.Security.Claims;
-using System.IdentityModel.Tokens.Jwt;
-// using Newtonsoft.Json; // Add this to ensure Newtonsoft.Json is loaded
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Force Newtonsoft.Json to load
-// JsonConvert.DefaultSettings = () => new JsonSerializerSettings();
 
 // JWT Authentication configuration
 builder.Services.AddAuthentication(options =>
@@ -45,10 +41,7 @@ builder.Services.AddAuthentication(options =>
             var tokenFromCookie = context.Request.Cookies["LocalAccessToken"];
             if (!string.IsNullOrEmpty(tokenFromCookie))
             {
-                // Clean the token
-                tokenFromCookie = tokenFromCookie.Trim();
-                context.Token = tokenFromCookie;
-                Console.WriteLine("Token extracted from cookie :"+ tokenFromCookie);
+                context.Token = tokenFromCookie.Trim();
             }
             return Task.CompletedTask;
         }
@@ -61,14 +54,14 @@ var databaseName = builder.Configuration["MongoDbSettings:DatabaseName"];
 
 if (string.IsNullOrEmpty(mongoConnectionString) || string.IsNullOrEmpty(databaseName))
 {
-    throw new InvalidOperationException("MongoDB configuration is missing.");
+    throw new InvalidOperationException("MongoDB connection string or database name is not configured properly in application settings.");
 }
 
 var mongoClient = new MongoClient(mongoConnectionString);
 var database = mongoClient.GetDatabase(databaseName);
 builder.Services.AddSingleton(database);
 
-// Register your services
+// Register services
 builder.Services.AddScoped<EventService>();
 builder.Services.AddSingleton<TaskService>();
 builder.Services.AddScoped<EventTypeService>();
@@ -79,7 +72,7 @@ builder.Services.AddScoped<ChatThreadService>();
 builder.Services.AddScoped<DocumentDetailsService>();
 builder.Services.AddSingleton<MongoDbService>();
 
-// Add controllers
+// Add controllers and API documentation
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -106,45 +99,38 @@ if (app.Environment.IsDevelopment())
 // CORS middleware
 app.UseCors("AllowSpecificOrigins");
 
-// Add this middleware before authentication to copy cookie to header
+// Copy JWT token from cookie to authorization header
 app.Use(async (context, next) =>
 {
     var tokenFromCookie = context.Request.Cookies["LocalAccessToken"];
     if (!string.IsNullOrEmpty(tokenFromCookie) && !context.Request.Headers.ContainsKey("Authorization"))
     {
         context.Request.Headers.Append("Authorization", $"Bearer {tokenFromCookie.Trim()}");
-        Console.WriteLine("Added Authorization header from cookie");
     }
     await next();
 });
 
 app.UseAuthentication();
 
-// Add this to enrich user context after authentication
+// Enrich user context after authentication
 app.Use(async (context, next) =>
 {
-    if (context.User.Identity.IsAuthenticated)
+    if (context.User.Identity?.IsAuthenticated == true)
     {
         try
         {
-            // Get MongoDB service
             var mongoDbService = context.RequestServices.GetRequiredService<MongoDbService>();
-            
-            // Get user ID from claims
             var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             
             if (!string.IsNullOrEmpty(userId))
             {
-                // Fetch user from database
                 var usersCollection = mongoDbService.GetDatabase().GetCollection<User>("Users");
                 var user = await usersCollection.Find(u => u.Id == userId).FirstOrDefaultAsync();
                 
                 if (user != null)
                 {
-                    // Store user in HttpContext.Items
                     context.Items["CurrentUser"] = user;
                     
-                    // Get roles if available
                     if (user.RoleIds?.Any() == true)
                     {
                         var rolesCollection = mongoDbService.GetDatabase().GetCollection<Role>("Roles");
@@ -156,7 +142,14 @@ app.Use(async (context, next) =>
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error fetching user data: {ex.Message}");
+            // Log the error or handle it according to your application's needs
+            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+            await context.Response.WriteAsJsonAsync(new 
+            { 
+                error = "Error while retrieving user information",
+                details = app.Environment.IsDevelopment() ? ex.Message : null
+            });
+            return;
         }
     }
     
@@ -164,22 +157,6 @@ app.Use(async (context, next) =>
 });
 
 app.UseAuthorization();
-
-// Logging middleware
-app.Use(async (context, next) =>
-{
-    if (context.User.Identity.IsAuthenticated)
-    {
-        Console.WriteLine("User is authenticated!");
-    }
-    else
-    {
-        Console.WriteLine("User is NOT authenticated");
-    }
-    
-    await next();
-});
-
 app.MapControllers();
 app.Run();
 

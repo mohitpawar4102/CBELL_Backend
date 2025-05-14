@@ -1,10 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Driver;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using YourNamespace.Library.Database;
-using YourNamespace.Models;
 using YourNamespace.DTOs;
+using YourNamespace.Services;
+// using YourApiMicroservice.Auth; // Add this for AuthGuard if needed
 
 namespace YourNamespace.Controllers
 {
@@ -12,129 +10,36 @@ namespace YourNamespace.Controllers
     [Route("api/features")]
     public class FeaturesController : ControllerBase
     {
-        private readonly MongoDbService _mongoDbService;
+        private readonly FeatureService _featureService;
 
-        public FeaturesController(MongoDbService mongoDbService)
+        public FeaturesController(FeatureService featureService)
         {
-            _mongoDbService = mongoDbService;
+            _featureService = featureService;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetFeatures([FromQuery] string moduleId = null)
-        {
-            var filter = moduleId != null
-                ? Builders<Feature>.Filter.And(
-                    Builders<Feature>.Filter.Eq(f => f.IsActive, true),
-                    Builders<Feature>.Filter.Eq(f => f.ModuleId, moduleId))
-                : Builders<Feature>.Filter.Eq(f => f.IsActive, true);
-
-            var features = await _mongoDbService.GetDatabase()
-                .GetCollection<Feature>("Features")
-                .Find(filter)
-                .ToListAsync();
-
-            return Ok(features);
-        }
+        // [AuthGuard("Administration", "Features", "Read")] // Add this if needed
+        public Task<IActionResult> GetFeatures([FromQuery] string moduleId = null) => 
+            _featureService.GetFeaturesAsync(moduleId);
 
         [HttpPost]
-        public async Task<IActionResult> CreateFeature([FromBody] FeatureDto featureDto)
-        {
-            try
-            {
-                // Verify module exists
-                var moduleExists = await _mongoDbService.GetDatabase()
-                    .GetCollection<Module>("Modules")
-                    .Find(m => m.Id == featureDto.ModuleId && m.IsActive)
-                    .AnyAsync();
-
-                if (!moduleExists)
-                    return BadRequest(new { message = "Module not found or inactive" });
-
-                var feature = new Feature
-                {
-                    ModuleId = featureDto.ModuleId,
-                    Name = featureDto.Name,
-                    DisplayName = featureDto.DisplayName,
-                    Description = featureDto.Description,
-                    IsActive = true
-                };
-
-                await _mongoDbService.GetDatabase()
-                    .GetCollection<Feature>("Features")
-                    .InsertOneAsync(feature);
-
-                return Ok(new
-                {
-                    message = "Feature created successfully",
-                    feature
-                });
-            }
-            catch (Exception ex)
-            {
-                // Log the exception here
-                return StatusCode(500, new { message = $"An error occurred: {ex.Message}", stackTrace = ex.StackTrace });
-            }
-        }
+        // [AuthGuard("Administration", "Features", "Create")] // Add this if needed
+        public Task<IActionResult> CreateFeature([FromBody] FeatureDto featureDto) => 
+            _featureService.CreateFeatureAsync(featureDto);
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetFeature(string id)
-        {
-            var feature = await _mongoDbService.GetDatabase()
-                .GetCollection<Feature>("Features")
-                .Find(f => f.Id == id && f.IsActive)
-                .FirstOrDefaultAsync();
-
-            if (feature == null)
-                return NotFound(new { message = $"Feature with ID {id} not found" });
-
-            return Ok(feature);
-        }
+        // [AuthGuard("Administration", "Features", "Read")] // Add this if needed
+        public Task<IActionResult> GetFeature(string id) => 
+            _featureService.GetFeatureByIdAsync(id);
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateFeature(string id, [FromBody] FeatureDto featureDto)
-        {
-            // Verify module exists
-            var moduleExists = await _mongoDbService.GetDatabase()
-                .GetCollection<Module>("Modules")
-                .Find(m => m.Id == featureDto.ModuleId && m.IsActive)
-                .AnyAsync();
-
-            if (!moduleExists)
-                return BadRequest(new { message = "Module not found or inactive" });
-
-            var feature = new Feature
-            {
-                Id = id,
-                ModuleId = featureDto.ModuleId,
-                Name = featureDto.Name,
-                DisplayName = featureDto.DisplayName,
-                Description = featureDto.Description,
-                IsActive = true
-            };
-
-            var result = await _mongoDbService.GetDatabase()
-                .GetCollection<Feature>("Features")
-                .ReplaceOneAsync(f => f.Id == id, feature);
-
-            if (result.ModifiedCount == 0)
-                return NotFound(new { message = $"Feature with ID {id} not found" });
-
-            return Ok(feature);
-        }
+        // [AuthGuard("Administration", "Features", "Update")] // Add this if needed
+        public Task<IActionResult> UpdateFeature(string id, [FromBody] FeatureDto featureDto) => 
+            _featureService.UpdateFeatureAsync(id, featureDto);
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteFeature(string id)
-        {
-            // Perform soft delete
-            var update = Builders<Feature>.Update.Set(f => f.IsActive, false);
-            var result = await _mongoDbService.GetDatabase()
-                .GetCollection<Feature>("Features")
-                .UpdateOneAsync(f => f.Id == id, update);
-
-            if (result.ModifiedCount == 0)
-                return NotFound(new { message = $"Feature with ID {id} not found" });
-
-            return Ok(new { message = "Feature successfully deleted" });
-        }
+        // [AuthGuard("Administration", "Features", "Delete")] // Add this if needed
+        public Task<IActionResult> DeleteFeature(string id) => 
+            _featureService.DeleteFeatureAsync(id);
     }
 }
