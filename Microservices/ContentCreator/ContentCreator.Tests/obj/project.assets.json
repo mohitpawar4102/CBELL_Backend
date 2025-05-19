@@ -1,7 +1,7 @@
 {
   "version": 3,
   "targets": {
-    "net9.0": {
+    "net8.0": {
       "coverlet.collector/6.0.2": {
         "type": "package",
         "build": {
@@ -935,7 +935,7 @@
     }
   },
   "projectFileDependencyGroups": {
-    "net9.0": [
+    "net8.0": [
       "Microsoft.NET.Test.Sdk >= 17.11.1",
       "coverlet.collector >= 6.0.2",
       "xunit >= 2.9.2",
@@ -949,11 +949,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\TUF Gaming\\OneDrive\\Desktop\\Candent Projects\\CBELL_Candent\\MicroServices\\ContentCreator\\ContentCreator.Tests\\ContentCreator.Tests.csproj",
+      "projectUniqueName": "C:\\Users\\TUF Gaming\\OneDrive\\Desktop\\Candent Projects\\CBELL_Candent\\Microservices\\ContentCreator\\ContentCreator.Tests\\ContentCreator.Tests.csproj",
       "projectName": "ContentCreator.Tests",
-      "projectPath": "C:\\Users\\TUF Gaming\\OneDrive\\Desktop\\Candent Projects\\CBELL_Candent\\MicroServices\\ContentCreator\\ContentCreator.Tests\\ContentCreator.Tests.csproj",
+      "projectPath": "C:\\Users\\TUF Gaming\\OneDrive\\Desktop\\Candent Projects\\CBELL_Candent\\Microservices\\ContentCreator\\ContentCreator.Tests\\ContentCreator.Tests.csproj",
       "packagesPath": "C:\\Users\\TUF Gaming\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\TUF Gaming\\OneDrive\\Desktop\\Candent Projects\\CBELL_Candent\\MicroServices\\ContentCreator\\ContentCreator.Tests\\obj\\",
+      "outputPath": "C:\\Users\\TUF Gaming\\OneDrive\\Desktop\\Candent Projects\\CBELL_Candent\\Microservices\\ContentCreator\\ContentCreator.Tests\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -964,7 +964,7 @@
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
-        "net9.0"
+        "net8.0"
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
@@ -972,8 +972,8 @@
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
-        "net9.0": {
-          "targetAlias": "net9.0",
+        "net8.0": {
+          "targetAlias": "net8.0",
           "projectReferences": {}
         }
       },
@@ -990,8 +990,8 @@
       "SdkAnalysisLevel": "9.0.200"
     },
     "frameworks": {
-      "net9.0": {
-        "targetAlias": "net9.0",
+      "net8.0": {
+        "targetAlias": "net8.0",
         "dependencies": {
           "Microsoft.NET.Test.Sdk": {
             "target": "Package",
