@@ -34,5 +34,7 @@ namespace YourNamespace.Controllers
         [HttpPost("logout")]
         public Task<IActionResult> Logout() => _authService.Logout();
 
+        [HttpGet("permissions")]
+        public Task<IActionResult> GetUserPermissions() => _authService.GetUserPermissions();
     }
 }

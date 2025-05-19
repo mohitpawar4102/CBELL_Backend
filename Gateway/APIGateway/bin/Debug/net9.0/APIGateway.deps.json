@@ -12,6 +12,7 @@
           "Microsoft.AspNetCore.OpenApi": "9.0.0",
           "Ocelot": "24.0.0",
           "Ocelot.Cache.CacheManager": "24.0.0",
+          "Ocelot.Provider.Polly": "24.0.0",
           "System.IdentityModel.Tokens.Jwt": "8.9.0",
           "JWT": "11.0.0"
         },
@@ -381,6 +382,37 @@
           }
         }
       },
+      "Ocelot.Provider.Polly/24.0.0": {
+        "dependencies": {
+          "Ocelot": "24.0.0",
+          "Polly": "8.5.2"
+        },
+        "runtime": {
+          "lib/net9.0/Ocelot.Provider.Polly.dll": {
+            "assemblyVersion": "24.0.0.0",
+            "fileVersion": "24.0.0.0"
+          }
+        }
+      },
+      "Polly/8.5.2": {
+        "dependencies": {
+          "Polly.Core": "8.5.2"
+        },
+        "runtime": {
+          "lib/net6.0/Polly.dll": {
+            "assemblyVersion": "8.0.0.0",
+            "fileVersion": "8.5.2.4319"
+          }
+        }
+      },
+      "Polly.Core/8.5.2": {
+        "runtime": {
+          "lib/net8.0/Polly.Core.dll": {
+            "assemblyVersion": "8.0.0.0",
+            "fileVersion": "8.5.2.4319"
+          }
+        }
+      },
       "System.Configuration.ConfigurationManager/6.0.0": {
         "dependencies": {
           "System.Security.Cryptography.ProtectedData": "6.0.0",
@@ -724,6 +756,27 @@
       "sha512": "sha512-IXiH/gqsFLicYep9qv3TesuvlCAxbHCc93SeOsLeHqKeb165ITtbeikxBWEZbFrgE65sS/Cc/zvIYcRRawGZKQ==",
       "path": "ocelot.cache.cachemanager/24.0.0",
       "hashPath": "ocelot.cache.cachemanager.24.0.0.nupkg.sha512"
+    },
+    "Ocelot.Provider.Polly/24.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-+eiWOlTR/mqeILxcPpIEHiKkHtUxU3c8u42PxTfwSFur2ZfrVwzGdF1jyBiMNUdTvCPeAAlM6Kv1C5fNEMvvlg==",
+      "path": "ocelot.provider.polly/24.0.0",
+      "hashPath": "ocelot.provider.polly.24.0.0.nupkg.sha512"
+    },
+    "Polly/8.5.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-vbXsGgkG86nG+TOwY+SmtrGrRHmHH0DQaxtILx//d3Dz/ocJ8izSNYzdvU2gEtWa/LDD8zJLvD3HdjEkdlvkhg==",
+      "path": "polly/8.5.2",
+      "hashPath": "polly.8.5.2.nupkg.sha512"
+    },
+    "Polly.Core/8.5.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-1MJKdxv4zwDmiWvYvVN24DsrWUfgQ4F83voH8bhbtLMdPuGy8CfTUzsgQhvyrl1a7hrM6f/ydwLVdVUI0xooUw==",
+      "path": "polly.core/8.5.2",
+      "hashPath": "polly.core.8.5.2.nupkg.sha512"
     },
     "System.Configuration.ConfigurationManager/6.0.0": {
       "type": "package",

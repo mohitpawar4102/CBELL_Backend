@@ -8,6 +8,9 @@ using YourNamespace.Library.Database;
 using YourNamespace.Models;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Collections.Generic;
 
 namespace YourNamespace.Services
 {
@@ -36,17 +39,17 @@ namespace YourNamespace.Services
             var usersCollection = GetUsersCollection();
             var organizationsCollection = _mongoDbService.GetDatabase().GetCollection<BsonDocument>("OrganizationMst");
 
-            // Check if user already exists
+            // Check if user already exists 
             var existingUser = await usersCollection.Find(u => u.Email == request.Email).FirstOrDefaultAsync();
             if (existingUser != null)
                 return new BadRequestObjectResult(new { message = "User already exists" });
 
             // Lookup Organization by code
             var organization = await organizationsCollection.Find(new BsonDocument
-    {
-        { "OrganizationCode", request.OrganizationCode },
-        { "IsDeleted", false }
-    }).FirstOrDefaultAsync();
+            {
+                { "OrganizationCode", request.OrganizationCode },
+                { "IsDeleted", false }
+            }).FirstOrDefaultAsync();
 
             if (organization == null)
                 return new BadRequestObjectResult(new { message = "Invalid organization code." });
@@ -60,7 +63,7 @@ namespace YourNamespace.Services
                 LastName = request.LastName,
                 PasswordHash = HashPassword(request.Password),
                 OrganizationCode = request.OrganizationCode,
-                OrganizationId = organizationId, // set from organization _id
+                OrganizationId = organizationId,
                 MFA = 1,
                 UserStatus = 1,
                 CreatedOn = DateTime.UtcNow,
@@ -97,7 +100,7 @@ namespace YourNamespace.Services
                 firstName = user.FirstName,
                 lastName = user.LastName,
                 organizationId = user.OrganizationId,
-                accessToken  = accessToken // Return token in response for API clients
+                roleids = user.RoleIds,
             });
         }
 
@@ -139,7 +142,7 @@ namespace YourNamespace.Services
                 {
                     user.RefreshToken = null;
                     user.RefreshTokenExpiryTime = DateTime.UtcNow;
-                    await usersCollection.ReplaceOneAsync(u => u.Id == user.Id, user);
+                    await usersCollection.ReplaceOneAsync(u => u.Id == user.Id, user); 
                 }
             }
 
@@ -227,7 +230,7 @@ namespace YourNamespace.Services
                     Secure = false,  // Change to false for HTTP localhost
                     SameSite = SameSiteMode.Lax,  // Try Lax instead of Strict for testing
                     Expires = DateTime.UtcNow.AddDays(7),
-                     Path = "/",
+                    Path = "/",
                 });
             }
         }
@@ -242,6 +245,69 @@ namespace YourNamespace.Services
         private static bool VerifyPassword(string enteredPassword, string storedHash)
         {
             return HashPassword(enteredPassword) == storedHash;
+        }
+
+        public async Task<IActionResult> GetUserPermissions()
+        {
+            var context = _httpContextAccessor.HttpContext;
+            if (context == null)
+                return new BadRequestObjectResult(new { message = "Invalid request" });
+
+            // Get token from cookie
+            if (!context.Request.Cookies.TryGetValue("LocalAccessToken", out var token))
+            {
+                return new UnauthorizedObjectResult(new { message = "Unauthorized" });
+            }
+
+            try
+            {
+                // Get user ID from token
+                var handler = new JwtSecurityTokenHandler();
+                var jwtToken = handler.ReadJwtToken(token);
+                var userId = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return new UnauthorizedObjectResult(new { message = "Invalid token" });
+                }
+
+                // Get user from database
+                var usersCollection = GetUsersCollection();
+                var user = await usersCollection.Find(u => u.Id == userId).FirstOrDefaultAsync();
+
+                if (user == null)
+                {
+                    return new NotFoundObjectResult(new { message = "User not found" });
+                }
+
+                // Get user's roles
+                var rolesCollection = _mongoDbService.GetDatabase().GetCollection<Role>("Roles");
+                var roles = await rolesCollection.Find(r => user.RoleIds.Contains(r.Id) && r.IsActive).ToListAsync();
+
+                // Get permissions from token
+                var permissionsClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "permissions")?.Value;
+                var permissions = permissionsClaim != null ? 
+                    System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, List<string>>>>(permissionsClaim) 
+                    : new Dictionary<string, Dictionary<string, List<string>>>();
+
+                return new OkObjectResult(new
+                {
+                    userId = user.Id,
+                    email = user.Email,
+                    roles = roles.Select(r => new
+                    {
+                        r.Id,
+                        r.Name,
+                        r.DisplayName,
+                        r.Description
+                    }),
+                    permissions
+                });
+            }
+            catch (Exception ex)
+            {
+                return new BadRequestObjectResult(new { message = $"Error processing token: {ex.Message}" });
+            }
         }
     }
 }

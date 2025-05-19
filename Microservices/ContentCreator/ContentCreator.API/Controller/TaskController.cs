@@ -24,7 +24,7 @@ namespace YourNamespace.Controllers
         public Task<IActionResult> CreateTask([FromBody] TaskDTO taskDto) => _taskService.CreateTaskAsync(taskDto);
 
         [HttpGet("by-event/{eventId}")]
-        [AuthGuard("Tasks", "TaskManagement", "Read")]
+        // [AuthGuard("Tasks", "TaskManagement", "Read")]
         public async Task<IActionResult> GetTasksByEventId(string eventId)
         {
             return await _taskService.GetTasksByEventIdAsync(eventId);

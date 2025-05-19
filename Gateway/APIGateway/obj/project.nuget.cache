@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "q1PIcns6wP8=",
+  "dgSpecHash": "cQrPykKK3V0=",
   "success": true,
   "projectFilePath": "C:\\Users\\TUF Gaming\\OneDrive\\Desktop\\Candent Projects\\CBELL_Candent\\Gateway\\APIGateway\\APIGateway.csproj",
   "expectedPackageFiles": [
@@ -38,6 +38,9 @@
     "C:\\Users\\TUF Gaming\\.nuget\\packages\\newtonsoft.json.bson\\1.0.2\\newtonsoft.json.bson.1.0.2.nupkg.sha512",
     "C:\\Users\\TUF Gaming\\.nuget\\packages\\ocelot\\24.0.0\\ocelot.24.0.0.nupkg.sha512",
     "C:\\Users\\TUF Gaming\\.nuget\\packages\\ocelot.cache.cachemanager\\24.0.0\\ocelot.cache.cachemanager.24.0.0.nupkg.sha512",
+    "C:\\Users\\TUF Gaming\\.nuget\\packages\\ocelot.provider.polly\\24.0.0\\ocelot.provider.polly.24.0.0.nupkg.sha512",
+    "C:\\Users\\TUF Gaming\\.nuget\\packages\\polly\\8.5.2\\polly.8.5.2.nupkg.sha512",
+    "C:\\Users\\TUF Gaming\\.nuget\\packages\\polly.core\\8.5.2\\polly.core.8.5.2.nupkg.sha512",
     "C:\\Users\\TUF Gaming\\.nuget\\packages\\system.configuration.configurationmanager\\6.0.0\\system.configuration.configurationmanager.6.0.0.nupkg.sha512",
     "C:\\Users\\TUF Gaming\\.nuget\\packages\\system.diagnostics.diagnosticsource\\4.7.1\\system.diagnostics.diagnosticsource.4.7.1.nupkg.sha512",
     "C:\\Users\\TUF Gaming\\.nuget\\packages\\system.drawing.common\\6.0.0\\system.drawing.common.6.0.0.nupkg.sha512",
