@@ -25,21 +25,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Gateway", "Gateway", "{7428
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "APIGateway", "Gateway\APIGateway\APIGateway.csproj", "{7A9DCD67-B2DD-42BF-8390-ACB6C9FB8D12}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Authentication.Shared", "MicroServices\Authentication\Authentication.Shared\Authentication.Shared.csproj", "{34FB3AA6-771A-45F7-A5B5-609EECC761DB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Authentication.Shared", "Microservices\Authentication\Authentication.Shared\Authentication.Shared.csproj", "{34FB3AA6-771A-45F7-A5B5-609EECC761DB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ContentCreator", "ContentCreator", "{7D6D1ADA-400B-4C3A-928F-C4B133E86F1D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContentCreator.API", "MicroServices\ContentCreator\ContentCreator.API\ContentCreator.API.csproj", "{B8210910-6F72-41DD-9FDC-56BA4822BDEF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContentCreator.API", "Microservices\ContentCreator\ContentCreator.API\ContentCreator.API.csproj", "{B8210910-6F72-41DD-9FDC-56BA4822BDEF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContentCreator.Application", "MicroServices\ContentCreator\ContentCreator.Application\ContentCreator.Application.csproj", "{2E03994A-E9E5-421B-B5F8-24704E6DF4FE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContentCreator.Application", "Microservices\ContentCreator\ContentCreator.Application\ContentCreator.Application.csproj", "{2E03994A-E9E5-421B-B5F8-24704E6DF4FE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContentCreator.Domain", "MicroServices\ContentCreator\ContentCreator.Domain\ContentCreator.Domain.csproj", "{A1DD362A-96CF-40F9-9E2F-79BDB9415972}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContentCreator.Domain", "Microservices\ContentCreator\ContentCreator.Domain\ContentCreator.Domain.csproj", "{A1DD362A-96CF-40F9-9E2F-79BDB9415972}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContentCreator.Infrastructure", "MicroServices\ContentCreator\ContentCreator.Infrastructure\ContentCreator.Infrastructure.csproj", "{FCAE57FB-831A-46C2-A95C-51565F34867D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContentCreator.Infrastructure", "Microservices\ContentCreator\ContentCreator.Infrastructure\ContentCreator.Infrastructure.csproj", "{FCAE57FB-831A-46C2-A95C-51565F34867D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContentCreator.Shared", "MicroServices\ContentCreator\ContentCreator.Shared\ContentCreator.Shared.csproj", "{63BEAA93-36BB-4378-8840-B199649E77C1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContentCreator.Shared", "Microservices\ContentCreator\ContentCreator.Shared\ContentCreator.Shared.csproj", "{63BEAA93-36BB-4378-8840-B199649E77C1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContentCreator.Tests", "MicroServices\ContentCreator\ContentCreator.Tests\ContentCreator.Tests.csproj", "{63DFA6C8-0671-4432-A8CC-0814FE94C58F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContentCreator.Tests", "Microservices\ContentCreator\ContentCreator.Tests\ContentCreator.Tests.csproj", "{63DFA6C8-0671-4432-A8CC-0814FE94C58F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Library", "Library\Library.csproj", "{E38696A6-FC67-4100-9CFD-0F131C31C577}"
 EndProject
