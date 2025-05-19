@@ -48,11 +48,11 @@ jobs:
     
     - name: Publish Authentication Service
       run: |
-        dotnet publish "Microservices/Authentication/Authentication.API/Authentication.API.csproj" -c Release -o ./publish/auth
+        dotnet publish "MicroServices/Authentication/Authentication.API/Authentication.API.csproj" -c Release -o ./publish/auth
     
     - name: Publish ContentCreator Service
       run: |
-        dotnet publish "Microservices/ContentCreator/ContentCreator.API/ContentCreator.API.csproj" -c Release -o ./publish/content
+        dotnet publish "MicroServices/ContentCreator/ContentCreator.API/ContentCreator.API.csproj" -c Release -o ./publish/content
     
     - name: Publish API Gateway
       run: |
