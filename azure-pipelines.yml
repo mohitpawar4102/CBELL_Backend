@@ -1,0 +1,109 @@
+trigger:
+  branches:
+    include:
+      - mohit  # or 'main' for production
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  buildConfiguration: 'Release'
+
+stages:
+- stage: BuildAndTest
+  displayName: 'Build and Test'
+  jobs:
+  - job: Build
+    displayName: 'Build Solution'
+    steps:
+    - task: UseDotNet@2
+      inputs:
+        packageType: 'sdk'
+        version: '9.0.x'
+
+    - task: NuGetToolInstaller@1
+
+    - task: NuGetCommand@2
+      inputs:
+        restoreSolution: '**/*.sln'
+
+    - task: VSBuild@1
+      inputs:
+        solution: '**/*.sln'
+        configuration: '$(buildConfiguration)'
+
+    - task: VSTest@2
+      inputs:
+        platform: 'Any CPU'
+        configuration: '$(buildConfiguration)'
+
+- stage: Publish
+  displayName: 'Publish Microservices'
+  dependsOn: BuildAndTest
+  jobs:
+  - job: PublishProjects
+    displayName: 'Publish Projects'
+    steps:
+    - task: UseDotNet@2
+      inputs:
+        packageType: 'sdk'
+        version: '9.0.x'
+
+    - task: DotNetCoreCLI@2
+      displayName: 'Publish Authentication Service'
+      inputs:
+        command: 'publish'
+        publishWebProjects: false
+        projects: 'Microservices/Authentication/Authentication.API/Authentication.API.csproj'
+        arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/auth'
+
+    - task: DotNetCoreCLI@2
+      displayName: 'Publish ContentCreator Service'
+      inputs:
+        command: 'publish'
+        publishWebProjects: false
+        projects: 'Microservices/ContentCreator/ContentCreator.API/ContentCreator.API.csproj'
+        arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/content'
+
+    - task: DotNetCoreCLI@2
+      displayName: 'Publish API Gateway'
+      inputs:
+        command: 'publish'
+        publishWebProjects: false
+        projects: 'Gateway/APIGateway/APIGateway.csproj'
+        arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/gateway'
+
+    - publish: $(Build.ArtifactStagingDirectory)
+      artifact: drop
+
+- stage: DeployLocal
+  displayName: 'Deploy to Local Server'
+  dependsOn: Publish
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/mohit'))
+  jobs:
+  - job: DeployViaSSH
+    displayName: 'Deploy via SSH'
+    steps:
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        artifact: drop
+        path: $(Pipeline.Workspace)/drop
+
+    - task: SSH@0
+      inputs:
+        sshEndpoint: 'LocalMachineSSH'  # Define this in Azure DevOps project settings (Service Connections)
+        runOptions: 'inline'
+        inline: |
+          powershell -Command "
+            Stop-Service -Name 'auth-service-local' -Force -ErrorAction SilentlyContinue;
+            Stop-Service -Name 'content-service-local' -Force -ErrorAction SilentlyContinue;
+            Stop-Service -Name 'api-gateway-local' -Force -ErrorAction SilentlyContinue;
+            
+            Copy-Item -Path '$(Pipeline.Workspace)/drop/auth/*' -Destination 'C:\Services\auth-service' -Recurse -Force;
+            Copy-Item -Path '$(Pipeline.Workspace)/drop/content/*' -Destination 'C:\Services\content-service' -Recurse -Force;
+            Copy-Item -Path '$(Pipeline.Workspace)/drop/gateway/*' -Destination 'C:\Services\api-gateway' -Recurse -Force;
+            
+            Start-Service -Name 'auth-service-local';
+            Start-Service -Name 'content-service-local';
+            Start-Service -Name 'api-gateway-local';
+          "
