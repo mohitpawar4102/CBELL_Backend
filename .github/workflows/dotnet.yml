@@ -23,7 +23,7 @@ jobs:
     
     - name: Restore dependencies
       run: |
-        dotnet restore "CBELL_Candent.sln"
+        dotnet restore
     
     - name: Build
       run: |
