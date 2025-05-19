@@ -5,9 +5,9 @@ name: .NET Microservices CI/CD
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "mohit" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "mohit" ]
 
 jobs:
   build-and-test:
