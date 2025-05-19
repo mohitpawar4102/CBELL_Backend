@@ -16,10 +16,10 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
-    - name: Setup .NET
+    - name: Setup .NET SDK 9
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 8.0.x
+        dotnet-version: '9.0.x'
     
     - name: Restore dependencies
       run: |
@@ -41,10 +41,10 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
-    - name: Setup .NET
+    - name: Setup .NET SDK 9
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 8.0.x
+        dotnet-version: '9.0.x'
     
     - name: Publish Authentication Service
       run: |
@@ -88,10 +88,10 @@ jobs:
   #   steps:
   #   - uses: actions/checkout@v4
     
-  #   - name: Setup .NET
+  #   - name: Setup .NET SDK 9
   #     uses: actions/setup-dotnet@v4
   #     with:
-  #       dotnet-version: 8.0.x
+  #       dotnet-version: '9.0.x'
     
   #   - name: Publish Authentication Service
   #     run: |

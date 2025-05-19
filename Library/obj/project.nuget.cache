@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "qlH/Y8ygRww=",
+  "dgSpecHash": "6fC/w2lOAQw=",
   "success": true,
   "projectFilePath": "C:\\Users\\TUF Gaming\\OneDrive\\Desktop\\Candent Projects\\CBELL_Candent\\Library\\Library.csproj",
   "expectedPackageFiles": [
@@ -41,7 +41,7 @@
       "message": "Package 'System.IdentityModel.Tokens.Jwt' 6.30.0 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-59j7-ghrg-fj52",
       "libraryId": "System.IdentityModel.Tokens.Jwt",
       "targetGraphs": [
-        "net8.0"
+        "net9.0"
       ]
     }
   ]
