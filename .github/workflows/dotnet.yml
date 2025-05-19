@@ -23,20 +23,20 @@ jobs:
     
     - name: Restore dependencies
       run: |
-        dotnet restore CBELL_Candent.sln
+        dotnet restore "CBELL_Candent.sln"
     
     - name: Build
       run: |
-        dotnet build CBELL_Candent.sln --no-restore --configuration Release
+        dotnet build "CBELL_Candent.sln" --no-restore --configuration Release
     
     - name: Test
       run: |
-        dotnet test CBELL_Candent.sln --no-build --configuration Release --verbosity normal
+        dotnet test "CBELL_Candent.sln" --no-build --configuration Release --verbosity normal
 
   deploy-local:
     needs: build-and-test
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/mohit'
     
     steps:
     - uses: actions/checkout@v4
@@ -48,15 +48,15 @@ jobs:
     
     - name: Publish Authentication Service
       run: |
-        dotnet publish Microservices/Authentication/Authentication.API/Authentication.API.csproj -c Release -o ./publish/auth
+        dotnet publish "Microservices/Authentication/Authentication.API/Authentication.API.csproj" -c Release -o ./publish/auth
     
     - name: Publish ContentCreator Service
       run: |
-        dotnet publish Microservices/ContentCreator/ContentCreator.API/ContentCreator.API.csproj -c Release -o ./publish/content
+        dotnet publish "Microservices/ContentCreator/ContentCreator.API/ContentCreator.API.csproj" -c Release -o ./publish/content
     
     - name: Publish API Gateway
       run: |
-        dotnet publish Gateway/APIGateway/APIGateway.csproj -c Release -o ./publish/gateway
+        dotnet publish "Gateway/APIGateway/APIGateway.csproj" -c Release -o ./publish/gateway
     
     - name: Deploy to Local Machine
       uses: appleboy/ssh-action@v1.0.3
