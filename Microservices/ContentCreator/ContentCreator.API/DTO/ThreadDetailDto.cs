@@ -6,6 +6,11 @@ namespace YourNamespace.DTOs
 {
     public class ThreadDetailDto
     {
+        public ThreadDetailDto()
+        {
+            CreatedOn = DateTime.UtcNow;
+            UpdatedOn = DateTime.UtcNow;
+        }
         public ObjectId ConversationId { get; set; }
         public string UserId { get; set; }
         public string UserName { get; set; }

@@ -16,6 +16,11 @@ public class TaskChatModel
 
 public class ThreadDetail
 {
+    public ThreadDetail()
+    {
+        CreatedOn = DateTime.UtcNow;
+        UpdatedOn = DateTime.UtcNow;
+    }
     [BsonRepresentation(BsonType.ObjectId)]
     public string ConversationId { get; set; } = ObjectId.GenerateNewId().ToString();
     public DateTime CreatedOn { get; set; }
