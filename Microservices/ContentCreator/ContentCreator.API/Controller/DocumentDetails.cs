@@ -16,6 +16,7 @@ public class DocumentDetailsController : ControllerBase
     {
         return await _service.AddDocumentDetailAsync(dto);
     }
+    
     [HttpGet("task/{taskId}")]
     public async Task<IActionResult> GetDocumentMetadataByTaskId(string taskId)
     {

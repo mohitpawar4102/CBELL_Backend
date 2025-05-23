@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using YourApiMicroservice.Auth;
 using YourNamespace.Services;
 
 namespace YourNamespace.Controllers
@@ -15,6 +16,7 @@ namespace YourNamespace.Controllers
         }
 
         [HttpGet]
+        [AuthGuard("Dashboard", "Dashboard Management", "Read")]
         public async Task<IActionResult> GetDashboard()
         {
             return await _dashboardService.GetDashboardDataAsync();

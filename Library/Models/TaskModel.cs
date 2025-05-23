@@ -1,8 +1,17 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using System;
+using System.Collections.Generic;
 
 namespace YourNamespace.Models
 {
+    public class ChecklistItem
+    {
+        public string Text { get; set; }
+        public bool Checked { get; set; }
+        public bool IsPlaceholder { get; set; }
+    }
+
     public class TaskModel
     {
         [BsonId]
@@ -21,11 +30,10 @@ namespace YourNamespace.Models
         public int CreativeNumbers { get; set; }
 
         [BsonElement("ChecklistDetails")]
-        public List<string> ChecklistDetails { get; set; } = new List<string>();
+        public List<ChecklistItem> ChecklistDetails { get; set; } = new List<ChecklistItem>();
         public string? Description { get; set; }
         public string OrganizationId { get; set; }
         public bool IsDeleted { get; set; } = false;
         public DateTime? DeletedOn { get; set; }
-
     }
 }

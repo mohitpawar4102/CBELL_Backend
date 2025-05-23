@@ -21,23 +21,23 @@ namespace YourNamespace.Controllers
         }
 
         [HttpPost("create_event")]
-        [AuthGuard("Events", "EventManagement", "Create")] // Requires Create permission
+        [AuthGuard("Events", "Event Management", "Create")] // Requires Create permission
         public Task<IActionResult> CreateEvent([FromBody] EventDto eventDto) => _eventService.CreateEventAsync(eventDto);
 
         [HttpGet("get_all_events")]
-        [AuthGuard("Events", "EventManagement", "Read")] // Requires Read permission
+        [AuthGuard("Events", "Event Management", "Read")] // Requires Read permission
         public Task<IActionResult> GetAllEvents() => _eventService.GetAllEventsAsync();
 
         [HttpGet("get_event/{id}")]
-        [AuthGuard("Events", "EventManagement", "Read")] // Requires Read permission
+        [AuthGuard("Events", "Event Management", "Read")] // Requires Read permission
         public Task<IActionResult> GetEventById(string id) => _eventService.GetEventByIdAsync(id);
 
         [HttpPut("update/{id}")]
-        [AuthGuard("Events", "EventManagement", "Update")] // Requires Update permission
+        [AuthGuard("Events", "Event Management", "Update")] // Requires Update permission
         public Task<IActionResult> UpdateEvent(string id, [FromBody] EventDto eventDto) => _eventService.UpdateEventAsync(id, eventDto);
 
         [HttpDelete("delete/{id}")]
-        [AuthGuard("Events", "EventManagement", "Delete")] // Requires Delete permission
+        [AuthGuard("Events", "Event Management", "Delete")] // Requires Delete permission
         public Task<IActionResult> DeleteEvent(string id) => _eventService.DeleteEventAsync(id);
     }
 }

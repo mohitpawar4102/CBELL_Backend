@@ -10,6 +10,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using YourNamespace.DTO;
 using YourNamespace.Library.Helpers;
+using ModelChecklistItem = YourNamespace.Models.ChecklistItem;
+using DtoChecklistItem = YourNamespace.DTO.ChecklistItem;
 
 namespace YourNamespace.Services
 {
@@ -44,7 +46,7 @@ namespace YourNamespace.Services
                 EventId = taskDto.EventId,
                 TaskTitle = taskDto.TaskTitle,
                 TaskStatus = taskDto.TaskStatus,
-                AssignedTo = taskDto.AssignedTo,  // Handle list of user IDs
+                AssignedTo = taskDto.AssignedTo,
                 CreatedBy = taskDto.CreatedBy,
                 UpdatedBy = taskDto.CreatedBy,
                 CreativeType = taskDto.CreativeType,
@@ -52,7 +54,12 @@ namespace YourNamespace.Services
                 CreatedOn = DateTime.UtcNow,
                 UpdatedOn = DateTime.UtcNow,
                 CreativeNumbers = taskDto.CreativeNumbers,
-                ChecklistDetails = taskDto.ChecklistDetails,
+                ChecklistDetails = taskDto.ChecklistDetails?.Select(dto => new ModelChecklistItem
+                {
+                    Text = dto.Text,
+                    Checked = dto.Checked,
+                    IsPlaceholder = dto.IsPlaceholder
+                }).ToList(),
                 Description = taskDto.Description,
                 OrganizationId = taskDto.OrganizationId
             };
@@ -69,7 +76,7 @@ namespace YourNamespace.Services
             }
         }
 
-        public async Task<IActionResult> GetTasksByEventIdAsync(string eventId)
+        public async Task<IActionResult> GetTasksByEventIdAsync(string eventId, string? userId = null)
         {
             if (string.IsNullOrWhiteSpace(eventId))
                 return new BadRequestObjectResult(new { message = "Event ID is required." });
@@ -82,10 +89,16 @@ namespace YourNamespace.Services
             { "IsDeleted", false }
         };
 
+                if (!string.IsNullOrWhiteSpace(userId))
+                {
+                    filter.Add("AssignedTo", new BsonDocument("$in", new BsonArray { userId }));
+                }
+
+
                 var tasks = await AggregateTasksAsync(filter);
 
                 if (tasks == null || tasks.Count == 0)
-                    return new NotFoundObjectResult(new { message = "No tasks found for the given Event ID." });
+                    return new NotFoundObjectResult(new { message = "No tasks found for the given criteria." });
 
                 return new OkObjectResult(tasks);
             }
@@ -94,7 +107,6 @@ namespace YourNamespace.Services
                 return new ObjectResult(new { message = $"An error occurred: {ex.Message}" }) { StatusCode = 500 };
             }
         }
-
 
         public async Task<IActionResult> GetAllTasksAsync()
         {
@@ -140,61 +152,54 @@ namespace YourNamespace.Services
             }
         }
 
-
-
         private async Task<List<TaskWithUserDto>> AggregateTasksAsync(BsonDocument? filter = null)
         {
             var db = _mongoDbService.GetDatabase();
             var taskCollection = db.GetCollection<BsonDocument>("TasksMst");
 
             var pipeline = new List<BsonDocument>
-{
-    new BsonDocument("$match", filter ?? new BsonDocument("IsDeleted", false)),
-
-    new BsonDocument("$addFields", new BsonDocument("AssignedToObjIds",
-        new BsonDocument("$map", new BsonDocument
-        {
-            { "input", "$AssignedTo" },
-            { "as", "userId" },
-            { "in", new BsonDocument("$toObjectId", "$$userId") }
-        }))),
-
-    new BsonDocument("$lookup", new BsonDocument
-    {
-        { "from", "Users" },
-        { "localField", "AssignedToObjIds" },
-        { "foreignField", "_id" },
-        { "as", "AssignedUsers" }
-    }),
-
-    new BsonDocument("$addFields", new BsonDocument("AssignedToFullNames",
-        new BsonDocument("$map", new BsonDocument
-        {
-            { "input", "$AssignedUsers" },
-            { "as", "user" },
-            { "in", new BsonDocument("$concat", new BsonArray { "$$user.FirstName", " ", "$$user.LastName" }) }
-        }))),
-
-    new BsonDocument("$project", new BsonDocument
-    {
-        { "Id", "$_id" },
-        { "TaskTitle", 1 },
-        { "TaskStatus", 1 },
-        { "AssignedTo", "$AssignedToFullNames" },
-        { "CreatedBy", 1 },
-        { "UpdatedBy", 1 },
-        { "CreativeType", 1 },
-        { "DueDate", 1 },
-        { "CreatedOn", 1 },
-        { "UpdatedOn", 1 },
-        { "Description", 1 },
-        { "OrganizationId", 1 },
-        { "EventId", 1 },
-        { "CreativeNumbers", 1 },
-        { "ChecklistDetails", 1 }
-    })
-};
-
+            {
+                new BsonDocument("$match", filter ?? new BsonDocument("IsDeleted", false)),
+                new BsonDocument("$addFields", new BsonDocument("AssignedToObjIds",
+                    new BsonDocument("$map", new BsonDocument
+                    {
+                        { "input", "$AssignedTo" },
+                        { "as", "userId" },
+                        { "in", new BsonDocument("$toObjectId", "$$userId") }
+                    }))),
+                new BsonDocument("$lookup", new BsonDocument
+                {
+                    { "from", "Users" },
+                    { "localField", "AssignedToObjIds" },
+                    { "foreignField", "_id" },
+                    { "as", "AssignedUsers" }
+                }),
+                new BsonDocument("$addFields", new BsonDocument("AssignedToFullNames",
+                    new BsonDocument("$map", new BsonDocument
+                    {
+                        { "input", "$AssignedUsers" },
+                        { "as", "user" },
+                        { "in", new BsonDocument("$concat", new BsonArray { "$$user.FirstName", " ", "$$user.LastName" }) }
+                    }))),
+                new BsonDocument("$project", new BsonDocument
+                {
+                    { "Id", "$_id" },
+                    { "TaskTitle", 1 },
+                    { "TaskStatus", 1 },
+                    { "AssignedTo", "$AssignedToFullNames" },
+                    { "CreatedBy", 1 },
+                    { "UpdatedBy", 1 },
+                    { "CreativeType", 1 },
+                    { "DueDate", 1 },
+                    { "CreatedOn", 1 },
+                    { "UpdatedOn", 1 },
+                    { "Description", 1 },
+                    { "OrganizationId", 1 },
+                    { "EventId", 1 },
+                    { "CreativeNumbers", 1 },
+                    { "ChecklistDetails", 1 }
+                })
+            };
 
             var result = await taskCollection.Aggregate<BsonDocument>(pipeline).ToListAsync();
 
@@ -206,8 +211,6 @@ namespace YourNamespace.Services
                 AssignedTo = doc.TryGetValue("AssignedTo", out var assignedToVal) && assignedToVal.IsBsonArray
                     ? assignedToVal.AsBsonArray.Select(x => x.AsString).ToList()
                     : new List<string>(),
-
-
                 CreatedBy = doc.GetValue("CreatedBy", 0).ToInt32(),
                 UpdatedBy = doc.GetValue("UpdatedBy", 0).ToInt32(),
                 CreativeType = doc.GetValue("CreativeType", "").AsString,
@@ -219,8 +222,13 @@ namespace YourNamespace.Services
                 EventId = doc.GetValue("EventId", "").AsString,
                 CreativeNumbers = doc.GetValue("CreativeNumbers", 0).ToInt32(),
                 ChecklistDetails = doc.Contains("ChecklistDetails") && doc["ChecklistDetails"].IsBsonArray
-                    ? doc["ChecklistDetails"].AsBsonArray.Select(x => x.AsString).ToList()
-                    : new List<string>() // Fallback to an empty list if ChecklistDetails is missing or not an array
+                    ? doc["ChecklistDetails"].AsBsonArray.Select(x => new DtoChecklistItem
+                    {
+                        Text = x["Text"].AsString,
+                        Checked = x["Checked"].AsBoolean,
+                        IsPlaceholder = x["IsPlaceholder"].AsBoolean
+                    }).ToList()
+                    : new List<DtoChecklistItem>()
             }).ToList();
         }
 
@@ -245,7 +253,12 @@ namespace YourNamespace.Services
                 .Set(t => t.UpdatedBy, taskDto.UpdatedBy)
                 .Set(t => t.UpdatedOn, DateTime.UtcNow)
                 .Set(t => t.CreativeNumbers, taskDto.CreativeNumbers)
-                .Set(t => t.ChecklistDetails, taskDto.ChecklistDetails)
+                .Set(t => t.ChecklistDetails, taskDto.ChecklistDetails?.Select(dto => new ModelChecklistItem
+                {
+                    Text = dto.Text,
+                    Checked = dto.Checked,
+                    IsPlaceholder = dto.IsPlaceholder
+                }).ToList())
                 .Set(t => t.Description, taskDto.Description);
 
             try

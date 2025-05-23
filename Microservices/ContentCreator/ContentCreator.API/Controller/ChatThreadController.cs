@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using YourNamespace.Services;
 using YourNamespace.DTO;
 using YourNamespace.DTOs;
+using YourApiMicroservice.Auth;
 
 namespace YourNamespace.Controllers
 {
@@ -18,12 +19,14 @@ namespace YourNamespace.Controllers
         }
 
         [HttpPost("add-thread")]
+        [AuthGuard("Thread", "Thread Management", "Create")] // Requires Create permission
         public async Task<IActionResult> AddThread([FromBody] CreateThreadDto dto)
         {
             return await _chatService.AddThreadToTaskChatAsync(dto);
         }
 
         [HttpGet("get-task-chat/{taskId}")]
+        [AuthGuard("Thread", "Thread Management", "Read")]
         public async Task<IActionResult> GetTaskChat(string taskId)
         {
             return await _chatService.GetTaskChatByTaskIdAsync(taskId);

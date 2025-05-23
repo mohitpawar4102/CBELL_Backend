@@ -181,7 +181,7 @@ namespace YourNamespace.Services
                 OrganizationName = doc.TryGetValue("OrganizationName", out var orgName) ? orgName.AsString : null
             }).Cast<object>().ToList();
         }
-        
+
 
     }
 }
