@@ -7,9 +7,13 @@ C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservice
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\ContentCreator\ContentCreator.API\bin\Debug\net9.0\ContentCreator.API.dll
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\ContentCreator\ContentCreator.API\bin\Debug\net9.0\ContentCreator.API.pdb
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\ContentCreator\ContentCreator.API\bin\Debug\net9.0\DnsClient.dll
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\ContentCreator\ContentCreator.API\bin\Debug\net9.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\ContentCreator\ContentCreator.API\bin\Debug\net9.0\Microsoft.AspNetCore.OpenApi.dll
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\ContentCreator\ContentCreator.API\bin\Debug\net9.0\Microsoft.IdentityModel.Abstractions.dll
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\ContentCreator\ContentCreator.API\bin\Debug\net9.0\Microsoft.IdentityModel.JsonWebTokens.dll
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\ContentCreator\ContentCreator.API\bin\Debug\net9.0\Microsoft.IdentityModel.Logging.dll
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\ContentCreator\ContentCreator.API\bin\Debug\net9.0\Microsoft.IdentityModel.Protocols.dll
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\ContentCreator\ContentCreator.API\bin\Debug\net9.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\ContentCreator\ContentCreator.API\bin\Debug\net9.0\Microsoft.IdentityModel.Tokens.dll
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\ContentCreator\ContentCreator.API\bin\Debug\net9.0\Microsoft.OpenApi.dll
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\ContentCreator\ContentCreator.API\bin\Debug\net9.0\MongoDB.Bson.dll
@@ -19,6 +23,7 @@ C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservice
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\ContentCreator\ContentCreator.API\bin\Debug\net9.0\Swashbuckle.AspNetCore.Swagger.dll
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\ContentCreator\ContentCreator.API\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerGen.dll
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\ContentCreator\ContentCreator.API\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\ContentCreator\ContentCreator.API\bin\Debug\net9.0\System.IdentityModel.Tokens.Jwt.dll
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\ContentCreator\ContentCreator.API\bin\Debug\net9.0\ZstdSharp.dll
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\ContentCreator\ContentCreator.API\bin\Debug\net9.0\Library.dll
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\ContentCreator\ContentCreator.API\bin\Debug\net9.0\Library.pdb
@@ -46,8 +51,3 @@ C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservice
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\ContentCreator\ContentCreator.API\obj\Debug\net9.0\ContentCreator.API.pdb
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\ContentCreator\ContentCreator.API\obj\Debug\net9.0\ContentCreator.API.genruntimeconfig.cache
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\ContentCreator\ContentCreator.API\obj\Debug\net9.0\ref\ContentCreator.API.dll
-C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\ContentCreator\ContentCreator.API\bin\Debug\net9.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
-C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\ContentCreator\ContentCreator.API\bin\Debug\net9.0\Microsoft.IdentityModel.JsonWebTokens.dll
-C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\ContentCreator\ContentCreator.API\bin\Debug\net9.0\Microsoft.IdentityModel.Protocols.dll
-C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\ContentCreator\ContentCreator.API\bin\Debug\net9.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
-C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\ContentCreator\ContentCreator.API\bin\Debug\net9.0\System.IdentityModel.Tokens.Jwt.dll
