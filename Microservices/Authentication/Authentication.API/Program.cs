@@ -13,8 +13,8 @@ using Microsoft.AspNetCore.CookiePolicy;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.WebHost.UseKestrel(options => options.ListenAnyIP(5001))
-.UseUrls("*");
+builder.WebHost.UseKestrel(options => options.ListenAnyIP(80))
+.UseUrls("http://+:80");
 
 // Register MongoDB
 var mongoConnectionString = builder.Configuration.GetConnectionString("MongoDb");
