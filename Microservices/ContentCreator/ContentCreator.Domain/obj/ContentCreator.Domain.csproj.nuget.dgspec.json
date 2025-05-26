@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\TUF Gaming\\OneDrive\\Desktop\\Candent Projects\\CBELL_Candent\\Microservices\\ContentCreator\\ContentCreator.Domain\\ContentCreator.Domain.csproj": {}
+    "C:\\Users\\TUF Gaming\\OneDrive\\Desktop\\Candent Projects\\CBELL_Candent\\MicroServices\\ContentCreator\\ContentCreator.Domain\\ContentCreator.Domain.csproj": {}
   },
   "projects": {
-    "C:\\Users\\TUF Gaming\\OneDrive\\Desktop\\Candent Projects\\CBELL_Candent\\Microservices\\ContentCreator\\ContentCreator.Domain\\ContentCreator.Domain.csproj": {
+    "C:\\Users\\TUF Gaming\\OneDrive\\Desktop\\Candent Projects\\CBELL_Candent\\MicroServices\\ContentCreator\\ContentCreator.Domain\\ContentCreator.Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\TUF Gaming\\OneDrive\\Desktop\\Candent Projects\\CBELL_Candent\\Microservices\\ContentCreator\\ContentCreator.Domain\\ContentCreator.Domain.csproj",
+        "projectUniqueName": "C:\\Users\\TUF Gaming\\OneDrive\\Desktop\\Candent Projects\\CBELL_Candent\\MicroServices\\ContentCreator\\ContentCreator.Domain\\ContentCreator.Domain.csproj",
         "projectName": "ContentCreator.Domain",
-        "projectPath": "C:\\Users\\TUF Gaming\\OneDrive\\Desktop\\Candent Projects\\CBELL_Candent\\Microservices\\ContentCreator\\ContentCreator.Domain\\ContentCreator.Domain.csproj",
+        "projectPath": "C:\\Users\\TUF Gaming\\OneDrive\\Desktop\\Candent Projects\\CBELL_Candent\\MicroServices\\ContentCreator\\ContentCreator.Domain\\ContentCreator.Domain.csproj",
         "packagesPath": "C:\\Users\\TUF Gaming\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\TUF Gaming\\OneDrive\\Desktop\\Candent Projects\\CBELL_Candent\\Microservices\\ContentCreator\\ContentCreator.Domain\\obj\\",
+        "outputPath": "C:\\Users\\TUF Gaming\\OneDrive\\Desktop\\Candent Projects\\CBELL_Candent\\MicroServices\\ContentCreator\\ContentCreator.Domain\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
