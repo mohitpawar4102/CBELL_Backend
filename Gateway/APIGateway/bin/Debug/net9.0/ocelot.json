@@ -5,8 +5,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 5002
+          "Host": "contentcreator-api",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/event/{everything}",
@@ -20,8 +20,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 5002
+          "Host": "contentcreator-api",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/task/{everything}",
@@ -35,8 +35,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 5001
+          "Host": "authentication-api",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/auth/{everything}",
@@ -47,8 +47,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 5001
+          "Host": "authentication-api",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/roles/{everything}",
@@ -59,8 +59,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 5001
+          "Host": "authentication-api",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/modules/{everything}",
@@ -71,8 +71,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 5001
+          "Host": "authentication-api",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/features/{everything}",
@@ -83,8 +83,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 5001
+          "Host": "authentication-api",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/permission-types/{everything}",
@@ -95,8 +95,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 5002
+          "Host": "contentcreator-api",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/document/{everything}",
@@ -107,8 +107,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 5002
+          "Host": "contentcreator-api",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/organization/{everything}",
@@ -119,8 +119,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 5002
+          "Host": "contentcreator-api",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/eventtype/{everything}",
@@ -131,8 +131,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 5002
+          "Host": "contentcreator-api",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/dashboard/{everything}",
@@ -143,8 +143,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 5002
+          "Host": "contentcreator-api",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/chat-thread/{everything}",
@@ -155,8 +155,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 5002
+          "Host": "contentcreator-api",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/document-details/{everything}",

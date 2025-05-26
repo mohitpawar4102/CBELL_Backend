@@ -2144,29 +2144,6 @@
           "lib/net7.0/ZstdSharp.dll": {}
         }
       },
-      "Authentication.Application/1.0.0": {
-        "type": "project",
-        "framework": ".NETCoreApp,Version=v9.0",
-        "dependencies": {
-          "Authentication.Domain": "1.0.0"
-        },
-        "compile": {
-          "bin/placeholder/Authentication.Application.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/Authentication.Application.dll": {}
-        }
-      },
-      "Authentication.Domain/1.0.0": {
-        "type": "project",
-        "framework": ".NETCoreApp,Version=v9.0",
-        "compile": {
-          "bin/placeholder/Authentication.Domain.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/Authentication.Domain.dll": {}
-        }
-      },
       "Library/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v9.0",
@@ -6892,16 +6869,6 @@
         "zstdsharp.port.nuspec"
       ]
     },
-    "Authentication.Application/1.0.0": {
-      "type": "project",
-      "path": "../Authentication.Application/Authentication.Application.csproj",
-      "msbuildProject": "../Authentication.Application/Authentication.Application.csproj"
-    },
-    "Authentication.Domain/1.0.0": {
-      "type": "project",
-      "path": "../Authentication.Domain/Authentication.Domain.csproj",
-      "msbuildProject": "../Authentication.Domain/Authentication.Domain.csproj"
-    },
     "Library/1.0.0": {
       "type": "project",
       "path": "../../../Library/Library.csproj",
@@ -6910,7 +6877,6 @@
   },
   "projectFileDependencyGroups": {
     "net9.0": [
-      "Authentication.Application >= 1.0.0",
       "DotNetEnv >= 3.1.1",
       "Library >= 1.0.0",
       "Microsoft.AspNetCore.Authentication.Google >= 9.0.2",
@@ -6958,9 +6924,6 @@
           "projectReferences": {
             "C:\\Users\\TUF Gaming\\OneDrive\\Desktop\\Candent Projects\\CBELL_Candent\\Library\\Library.csproj": {
               "projectPath": "C:\\Users\\TUF Gaming\\OneDrive\\Desktop\\Candent Projects\\CBELL_Candent\\Library\\Library.csproj"
-            },
-            "C:\\Users\\TUF Gaming\\OneDrive\\Desktop\\Candent Projects\\CBELL_Candent\\Microservices\\Authentication\\Authentication.Application\\Authentication.Application.csproj": {
-              "projectPath": "C:\\Users\\TUF Gaming\\OneDrive\\Desktop\\Candent Projects\\CBELL_Candent\\Microservices\\Authentication\\Authentication.Application\\Authentication.Application.csproj"
             }
           }
         }
