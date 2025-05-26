@@ -51,9 +51,33 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "dependencies": {
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
               "version": "[9.0.0, )"
+            },
+            "Ocelot": {
+              "target": "Package",
+              "version": "[24.0.0, )"
+            },
+            "Ocelot.Cache.CacheManager": {
+              "target": "Package",
+              "version": "[24.0.0, )"
+            },
+            "Ocelot.Provider.Polly": {
+              "target": "Package",
+              "version": "[24.0.0, )"
+            },
+            "System.IdentityModel.Tokens.Jwt": {
+              "target": "Package",
+              "version": "[8.9.0, )"
+            },
+            "jwt": {
+              "target": "Package",
+              "version": "[11.0.0, )"
             }
           },
           "imports": [

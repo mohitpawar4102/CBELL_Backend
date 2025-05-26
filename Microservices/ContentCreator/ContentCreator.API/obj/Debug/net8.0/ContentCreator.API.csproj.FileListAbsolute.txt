@@ -1,0 +1,8 @@
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\ContentCreator\ContentCreator.API\obj\Debug\net8.0\ContentCreator.API.csproj.AssemblyReference.cache
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\ContentCreator\ContentCreator.API\obj\Debug\net8.0\ContentCreator.API.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\ContentCreator\ContentCreator.API\obj\Debug\net8.0\ContentCreator.API.AssemblyInfoInputs.cache
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\ContentCreator\ContentCreator.API\obj\Debug\net8.0\ContentCreator.API.AssemblyInfo.cs
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\ContentCreator\ContentCreator.API\obj\Debug\net8.0\ContentCreator.API.csproj.CoreCompileInputs.cache
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\ContentCreator\ContentCreator.API\obj\Debug\net8.0\ContentCreator.API.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\ContentCreator\ContentCreator.API\obj\Debug\net8.0\ContentCreator.API.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\ContentCreator\ContentCreator.API\obj\Debug\net8.0\ContentCreator.API.sourcelink.json

@@ -5,6 +5,7 @@ C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservice
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.Domain\obj\Debug\net9.0\Authentication.Domain.AssemblyInfoInputs.cache
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.Domain\obj\Debug\net9.0\Authentication.Domain.AssemblyInfo.cs
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.Domain\obj\Debug\net9.0\Authentication.Domain.csproj.CoreCompileInputs.cache
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.Domain\obj\Debug\net9.0\Authentication.Domain.sourcelink.json
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.Domain\obj\Debug\net9.0\Authentication.Domain.dll
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.Domain\obj\Debug\net9.0\refint\Authentication.Domain.dll
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.Domain\obj\Debug\net9.0\Authentication.Domain.pdb

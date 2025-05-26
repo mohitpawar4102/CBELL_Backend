@@ -100,6 +100,7 @@ C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservice
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.Tests\obj\Debug\net9.0\Authentication.Tests.AssemblyInfoInputs.cache
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.Tests\obj\Debug\net9.0\Authentication.Tests.AssemblyInfo.cs
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.Tests\obj\Debug\net9.0\Authentication.Tests.csproj.CoreCompileInputs.cache
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.Tests\obj\Debug\net9.0\Authentication.Tests.sourcelink.json
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.Tests\obj\Debug\net9.0\Authenti.DC34EDB0.Up2Date
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.Tests\obj\Debug\net9.0\Authentication.Tests.dll
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\Microservices\Authentication\Authentication.Tests\obj\Debug\net9.0\refint\Authentication.Tests.dll
