@@ -4,3 +4,24 @@ GET {{Authentication_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
+POST http://localhost:5001/api/auth/register
+Content-Type: application/json
+Accept: application/json
+
+{
+    "username": "test",
+    "email": "test@example.com",
+    "password": "test"
+}
+
+###
+POST {{Authentication_HostAddress}}/api/auth/login
+Content-Type: application/json
+Accept: application/json
+
+{
+    "username": "mohit",
+    "password": "mohit"
+}
+
+###

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\TUF Gaming\\OneDrive\\Desktop\\Candent Projects\\CBELL_Candent\\MicroServices\\Authentication\\Authentication.Shared\\Authentication.Shared.csproj": {}
+    "C:\\Users\\TUF Gaming\\OneDrive\\Desktop\\Candent Projects\\CBELL_Candent\\Microservices\\Authentication\\Authentication.Shared\\Authentication.Shared.csproj": {}
   },
   "projects": {
-    "C:\\Users\\TUF Gaming\\OneDrive\\Desktop\\Candent Projects\\CBELL_Candent\\MicroServices\\Authentication\\Authentication.Shared\\Authentication.Shared.csproj": {
+    "C:\\Users\\TUF Gaming\\OneDrive\\Desktop\\Candent Projects\\CBELL_Candent\\Microservices\\Authentication\\Authentication.Shared\\Authentication.Shared.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\TUF Gaming\\OneDrive\\Desktop\\Candent Projects\\CBELL_Candent\\MicroServices\\Authentication\\Authentication.Shared\\Authentication.Shared.csproj",
+        "projectUniqueName": "C:\\Users\\TUF Gaming\\OneDrive\\Desktop\\Candent Projects\\CBELL_Candent\\Microservices\\Authentication\\Authentication.Shared\\Authentication.Shared.csproj",
         "projectName": "Authentication.Shared",
-        "projectPath": "C:\\Users\\TUF Gaming\\OneDrive\\Desktop\\Candent Projects\\CBELL_Candent\\MicroServices\\Authentication\\Authentication.Shared\\Authentication.Shared.csproj",
+        "projectPath": "C:\\Users\\TUF Gaming\\OneDrive\\Desktop\\Candent Projects\\CBELL_Candent\\Microservices\\Authentication\\Authentication.Shared\\Authentication.Shared.csproj",
         "packagesPath": "C:\\Users\\TUF Gaming\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\TUF Gaming\\OneDrive\\Desktop\\Candent Projects\\CBELL_Candent\\MicroServices\\Authentication\\Authentication.Shared\\obj\\",
+        "outputPath": "C:\\Users\\TUF Gaming\\OneDrive\\Desktop\\Candent Projects\\CBELL_Candent\\Microservices\\Authentication\\Authentication.Shared\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

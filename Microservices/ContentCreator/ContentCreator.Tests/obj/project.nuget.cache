@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "GP4V+hB8g3M=",
+  "dgSpecHash": "+LLNiIDUF7I=",
   "success": true,
-  "projectFilePath": "C:\\Users\\TUF Gaming\\OneDrive\\Desktop\\Candent Projects\\CBELL_Candent\\MicroServices\\ContentCreator\\ContentCreator.Tests\\ContentCreator.Tests.csproj",
+  "projectFilePath": "C:\\Users\\TUF Gaming\\OneDrive\\Desktop\\Candent Projects\\CBELL_Candent\\Microservices\\ContentCreator\\ContentCreator.Tests\\ContentCreator.Tests.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\TUF Gaming\\.nuget\\packages\\coverlet.collector\\6.0.2\\coverlet.collector.6.0.2.nupkg.sha512",
     "C:\\Users\\TUF Gaming\\.nuget\\packages\\microsoft.codecoverage\\17.11.1\\microsoft.codecoverage.17.11.1.nupkg.sha512",

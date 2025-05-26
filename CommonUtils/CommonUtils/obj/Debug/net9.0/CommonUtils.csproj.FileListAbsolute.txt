@@ -5,6 +5,7 @@ C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\CommonUtils\
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\CommonUtils\CommonUtils\obj\Debug\net9.0\CommonUtils.AssemblyInfoInputs.cache
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\CommonUtils\CommonUtils\obj\Debug\net9.0\CommonUtils.AssemblyInfo.cs
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\CommonUtils\CommonUtils\obj\Debug\net9.0\CommonUtils.csproj.CoreCompileInputs.cache
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\CommonUtils\CommonUtils\obj\Debug\net9.0\CommonUtils.sourcelink.json
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\CommonUtils\CommonUtils\obj\Debug\net9.0\CommonUtils.dll
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\CommonUtils\CommonUtils\obj\Debug\net9.0\refint\CommonUtils.dll
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\CommonUtils\CommonUtils\obj\Debug\net9.0\CommonUtils.pdb

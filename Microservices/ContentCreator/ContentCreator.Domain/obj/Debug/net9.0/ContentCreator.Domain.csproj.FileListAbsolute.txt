@@ -5,6 +5,7 @@ C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\MicroService
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\MicroServices\ContentCreator\ContentCreator.Domain\obj\Debug\net9.0\ContentCreator.Domain.AssemblyInfoInputs.cache
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\MicroServices\ContentCreator\ContentCreator.Domain\obj\Debug\net9.0\ContentCreator.Domain.AssemblyInfo.cs
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\MicroServices\ContentCreator\ContentCreator.Domain\obj\Debug\net9.0\ContentCreator.Domain.csproj.CoreCompileInputs.cache
+C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\MicroServices\ContentCreator\ContentCreator.Domain\obj\Debug\net9.0\ContentCreator.Domain.sourcelink.json
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\MicroServices\ContentCreator\ContentCreator.Domain\obj\Debug\net9.0\ContentCreator.Domain.dll
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\MicroServices\ContentCreator\ContentCreator.Domain\obj\Debug\net9.0\refint\ContentCreator.Domain.dll
 C:\Users\TUF Gaming\OneDrive\Desktop\Candent Projects\CBELL_Candent\MicroServices\ContentCreator\ContentCreator.Domain\obj\Debug\net9.0\ContentCreator.Domain.pdb

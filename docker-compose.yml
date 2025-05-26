@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  authentication-api:
+    build:
+      context: .
+      dockerfile: Microservices/Authentication/Authentication.API/Dockerfile
+    ports:
+      - "5001:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+    networks:
+      - cbell-network
+    container_name: authentication-api
+
+  contentcreator-api:
+    build:
+      context: .
+      dockerfile: Microservices/ContentCreator/ContentCreator.API/Dockerfile
+    ports:
+      - "5002:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+    networks:
+      - cbell-network
+    container_name: contentcreator-api
+
+  api-gateway:
+    build:
+      context: .
+      dockerfile: Gateway/APIGateway/Dockerfile
+    ports:
+      - "5000:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+    depends_on:
+      - authentication-api
+      - contentcreator-api
+    networks:
+      - cbell-network
+    container_name: api-gateway
+
+networks:
+  cbell-network:
+    driver: bridge 
