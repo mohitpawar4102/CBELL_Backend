@@ -15,8 +15,9 @@ namespace YourNamespace.Services
     {
         private readonly IMongoCollection<Document> _documents;
         private readonly GridFSBucket _gridFs;
+        private readonly string _publicBaseUrl;
 
-        public DocumentService(MongoDbService mongoDbService)
+        public DocumentService(MongoDbService mongoDbService, IConfiguration config)
         {
             var db = mongoDbService.GetDatabase();
 
@@ -27,6 +28,7 @@ namespace YourNamespace.Services
             });
 
             _documents = db.GetCollection<Document>("Documents");
+            _publicBaseUrl = config["AppSettings:PublicBaseUrl"];
         }
 
         public async Task<IActionResult> UploadDocumentAsync(IFormFile file, string description)
@@ -175,6 +177,73 @@ namespace YourNamespace.Services
             catch (Exception ex)
             {
                 return new ObjectResult(new { message = $"Error fetching metadata: {ex.Message}" }) { StatusCode = 500 };
+            }
+        }
+
+        public async Task<IActionResult> GenerateDocumentLinkAsync(string documentId)
+        {
+            if (!ObjectId.TryParse(documentId, out var objectId))
+                return new BadRequestObjectResult(new { message = "Invalid document ID format." });
+
+            try
+            {
+                var document = await _documents
+                    .Find(d => d.Id == objectId && !d.IsDeleted)
+                    .FirstOrDefaultAsync();
+
+                if (document == null)
+                    return new NotFoundObjectResult(new { message = "Document not found or has been deleted." });
+
+                // Generate the direct access URL
+                // Note: Replace "your-api-base-url" with your actual API base URL
+                // ✅ Correct
+                // var accessUrl = $"http://localhost:5000/api/document/view/{documentId}";
+                // var baseUrl = "https://cbell.ai"; // ✅ must be HTTPS and public domain
+                var accessUrl = $"{_publicBaseUrl}/document/view/{documentId}";
+
+
+
+                return new OkObjectResult(new
+                {
+                    message = "Document access link generated successfully.",
+                    accessUrl = accessUrl,
+                    documentName = document.FileName,
+                    contentType = document.ContentType
+                });
+            }
+            catch (Exception ex)
+            {
+                return new ObjectResult(new { message = $"Error generating document link: {ex.Message}" }) { StatusCode = 500 };
+            }
+        }
+
+        public async Task<IActionResult> ViewDocumentAsync(string documentId)
+        {
+            if (!ObjectId.TryParse(documentId, out var objectId))
+                return new BadRequestObjectResult(new { message = "Invalid document ID format." });
+
+            try
+            {
+                var document = await _documents
+                    .Find(d => d.Id == objectId && !d.IsDeleted)
+                    .FirstOrDefaultAsync();
+
+                if (document == null)
+                    return new NotFoundObjectResult(new { message = "Document not found or has been deleted." });
+
+                var stream = await _gridFs.OpenDownloadStreamAsync(document.FileId);
+                var contentType = document.ContentType ?? "application/octet-stream";
+
+                // Set the Content-Disposition header to enable inline viewing
+                return new FileStreamResult(stream, contentType)
+                {
+                    FileDownloadName = document.FileName,
+                    EnableRangeProcessing = true // Enable partial content requests
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ObjectResult(new { message = $"Error accessing document: {ex.Message}" }) { StatusCode = 500 };
             }
         }
 

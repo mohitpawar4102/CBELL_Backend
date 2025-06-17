@@ -3,6 +3,7 @@ using YourNamespace.DTOs;
 using YourNamespace.Services;
 using System.Threading.Tasks;
 using YourApiMicroservice.Auth;
+using Microsoft.AspNetCore.Authorization;
 
 namespace YourNamespace.Controllers
 {
@@ -23,7 +24,7 @@ namespace YourNamespace.Controllers
             _documentService.UploadDocumentAsync(dto.File, dto.Description);
 
         [HttpGet("view/{id}")]
-        [AuthGuard("Document", "Document Management", "Read")]
+        [AllowAnonymous] 
         public Task<IActionResult> ViewDocument(string id) =>
         _documentService.StreamDocumentAsync(id, Response);
 
@@ -43,6 +44,11 @@ namespace YourNamespace.Controllers
         public async Task<IActionResult> GetAllGridFsMetadata()
         {
             return await _documentService.GetAllGridFsMetadataAsync();
+        }
+        [HttpGet("documents/{documentId}/link")]
+        public async Task<IActionResult> GenerateLink(string documentId)
+        {
+            return await _documentService.GenerateDocumentLinkAsync(documentId);
         }
     }
 }

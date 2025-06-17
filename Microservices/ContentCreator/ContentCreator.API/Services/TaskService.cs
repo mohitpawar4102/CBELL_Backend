@@ -84,16 +84,16 @@ namespace YourNamespace.Services
             try
             {
                 var filter = new BsonDocument
-        {
-            { "EventId", eventId },
-            { "IsDeleted", false }
-        };
+                {
+                    { "EventId", eventId },
+                    { "IsDeleted", false },
+                    { "TaskStatus", new BsonDocument("$ne", "Published") }
+                };
 
                 if (!string.IsNullOrWhiteSpace(userId))
                 {
                     filter.Add("AssignedTo", new BsonDocument("$in", new BsonArray { userId }));
                 }
-
 
                 var tasks = await AggregateTasksAsync(filter);
 
@@ -112,7 +112,12 @@ namespace YourNamespace.Services
         {
             try
             {
-                var tasks = await AggregateTasksAsync();
+                var filter = new BsonDocument
+                {
+                    { "IsDeleted", false },
+                    { "TaskStatus", new BsonDocument("$ne", "Published") }
+                };
+                var tasks = await AggregateTasksAsync(filter);
                 return new OkObjectResult(tasks);
             }
             catch (Exception ex)
@@ -145,6 +150,32 @@ namespace YourNamespace.Services
                 }
 
                 return new OkObjectResult(tasks.First());
+            }
+            catch (Exception ex)
+            {
+                return new ObjectResult(new { message = $"An error occurred: {ex.Message}" }) { StatusCode = 500 };
+            }
+        }
+
+        public async Task<IActionResult> GetPublishedTasksAsync(string eventId)
+        {
+            if (string.IsNullOrWhiteSpace(eventId))
+                return new BadRequestObjectResult(new { message = "Event ID is required." });
+
+            try
+            {
+                var filter = new BsonDocument
+                {
+                    { "IsDeleted", false },
+                    { "TaskStatus", "Published" },
+                    { "EventId", eventId }
+                };
+                var tasks = await AggregateTasksAsync(filter);
+
+                if (tasks == null || tasks.Count == 0)
+                    return new NotFoundObjectResult(new { message = "No published tasks found for this event." });
+
+                return new OkObjectResult(tasks);
             }
             catch (Exception ex)
             {
