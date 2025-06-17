@@ -199,7 +199,7 @@ namespace YourNamespace.Services
                 // ✅ Correct
                 // var accessUrl = $"http://localhost:5000/api/document/view/{documentId}";
                 // var baseUrl = "https://cbell.ai"; // ✅ must be HTTPS and public domain
-                var accessUrl = $"{_publicBaseUrl}/document/view/{documentId}";
+                var accessUrl = $"{_publicBaseUrl}/apis/document/view/{documentId}";
 
 
 
