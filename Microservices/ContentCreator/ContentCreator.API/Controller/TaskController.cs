@@ -34,6 +34,13 @@ namespace YourNamespace.Controllers
         [AuthGuard("Tasks", "Task Management", "Read")]
         public Task<IActionResult> GetAllTasks() => _taskService.GetAllTasksAsync();
 
+        [HttpGet("get_published_tasks/{eventId}")]
+        [AuthGuard("Tasks", "Task Management", "Read")]
+        public async Task<IActionResult> GetPublishedTasks(string eventId)
+        {
+            return await _taskService.GetPublishedTasksAsync(eventId);
+        }
+
         [HttpGet("get_task/{id}")]
         [AuthGuard("Tasks", "Task Management", "Read")]
         public Task<IActionResult> GetTaskById(string id) => _taskService.GetTaskByIdAsync(id);

@@ -72,6 +72,12 @@ builder.Services.AddScoped<ChatThreadService>();
 builder.Services.AddScoped<DocumentDetailsService>();
 builder.Services.AddSingleton<MongoDbService>();
 
+// Add HttpClient for social media services
+// builder.Services.AddHttpClient<SocialMediaService>();
+
+// Add social media service
+// builder.Services.AddScoped<SocialMediaService>();
+
 // Add controllers and API documentation
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
