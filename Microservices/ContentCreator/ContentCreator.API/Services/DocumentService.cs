@@ -216,6 +216,76 @@ namespace YourNamespace.Services
                 return new ObjectResult(new { message = $"Error generating document link: {ex.Message}" }) { StatusCode = 500 };
             }
         }
+        public async Task<string> ApproveDocumentAsync(string documentId)
+        {
+            if (!ObjectId.TryParse(documentId, out var objectId))
+                return "Invalid document ID.";
+
+            var document = await _documents.Find(d => d.Id == objectId && !d.IsDeleted).FirstOrDefaultAsync();
+            if (document == null)
+                return "Document not found.";
+
+            if (document.Status == "Approved")
+                return "Document is already approved.";
+
+            var filter = Builders<Document>.Filter.Eq(d => d.Id, objectId);
+            var update = Builders<Document>.Update.Set(d => d.Status, "Approved");
+            var result = await _documents.UpdateOneAsync(filter, update);
+
+            return result.ModifiedCount > 0 ? "Document approved successfully." : "Approval failed.";
+        }
+
+
+        public async Task<string> AddClientPublishedRecordAsync(string documentId, List<string> platforms, string userId, string userName)
+        {
+            if (!ObjectId.TryParse(documentId, out var objectId))
+                return "Invalid document ID.";
+
+            var document = await _documents.Find(d => d.Id == objectId && !d.IsDeleted).FirstOrDefaultAsync();
+            if (document == null)
+                return "Document not found.";
+
+            if (document.Status != "Approved")
+                return "Document is not approved yet.";
+
+            var alreadyPublished = new List<string>();
+            var newlyAdded = new List<string>();
+
+            foreach (var platform in platforms)
+            {
+                var existing = document.PublishedTo.FirstOrDefault(p => p.Platform.Equals(platform, StringComparison.OrdinalIgnoreCase));
+                if (existing != null && existing.IsPublished)
+                {
+                    alreadyPublished.Add(platform);
+                    continue;
+                }
+
+                document.PublishedTo.Add(new PublishStatus
+                {
+                    Platform = platform,
+                    IsPublished = true,
+                    PublishedAt = DateTime.UtcNow,
+                    PublishedById = userId,
+                    PublishedByName = userName
+                });
+
+                newlyAdded.Add(platform);
+            }
+
+            if (newlyAdded.Any())
+                await _documents.ReplaceOneAsync(d => d.Id == document.Id, document);
+
+            if (newlyAdded.Count == 0 && alreadyPublished.Count > 0)
+                return $"Document is already published on: {string.Join(", ", alreadyPublished)}.";
+
+            if (newlyAdded.Count > 0 && alreadyPublished.Count > 0)
+                return $"Document published on: {string.Join(", ", newlyAdded)}. Already published on: {string.Join(", ", alreadyPublished)}.";
+
+            return "Document published successfully.";
+        }
+
+
+
 
         public async Task<IActionResult> ViewDocumentAsync(string documentId)
         {

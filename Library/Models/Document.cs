@@ -31,5 +31,8 @@ namespace Library.Models
         [BsonElement("deletedOn")]
         public DateTime? DeletedOn { get; set; }
 
+        public string Status { get; set; } = "Pending"; // "Pending", "Approved"
+        public List<PublishStatus> PublishedTo { get; set; } = new();
+
     }
 }

@@ -4,6 +4,7 @@ using YourNamespace.Services;
 using System.Threading.Tasks;
 using YourApiMicroservice.Auth;
 using Microsoft.AspNetCore.Authorization;
+using YourNamespace.DTO;
 
 namespace YourNamespace.Controllers
 {
@@ -24,7 +25,7 @@ namespace YourNamespace.Controllers
             _documentService.UploadDocumentAsync(dto.File, dto.Description);
 
         [HttpGet("view/{id}")]
-        [AllowAnonymous] 
+        [AllowAnonymous]
         public Task<IActionResult> ViewDocument(string id) =>
         _documentService.StreamDocumentAsync(id, Response);
 
@@ -49,6 +50,19 @@ namespace YourNamespace.Controllers
         public async Task<IActionResult> GenerateLink(string documentId)
         {
             return await _documentService.GenerateDocumentLinkAsync(documentId);
+        }
+        [HttpPost("approve/{id}")]
+        public async Task<IActionResult> ApproveDocument(string id)
+        {
+            var message = await _documentService.ApproveDocumentAsync(id);
+            return Ok(new { message });
+        }
+
+        [HttpPost("publish-record/{id}")]
+        public async Task<IActionResult> AddPublishRecord(string id, [FromBody] PublishRequestDto request)
+        {
+            var message = await _documentService.AddClientPublishedRecordAsync(id, request.Platforms, request.UserId, request.UserName);
+            return Ok(new { message });
         }
     }
 }
