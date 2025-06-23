@@ -167,7 +167,7 @@ namespace YourNamespace.Services
                 var filter = new BsonDocument
                 {
                     { "IsDeleted", false },
-                    { "TaskStatus", "Published" },
+                    { "TaskStatus", "Approved" },
                     { "EventId", eventId }
                 };
                 var tasks = await AggregateTasksAsync(filter);
