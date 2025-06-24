@@ -12,6 +12,7 @@ using YourNamespace.DTO;
 using YourNamespace.Library.Helpers;
 using ModelChecklistItem = YourNamespace.Models.ChecklistItem;
 using DtoChecklistItem = YourNamespace.DTO.ChecklistItem;
+using Library.Models;
 
 namespace YourNamespace.Services
 {
@@ -92,15 +93,112 @@ namespace YourNamespace.Services
 
                 if (!string.IsNullOrWhiteSpace(userId))
                 {
-                    filter.Add("AssignedTo", new BsonDocument("$in", new BsonArray { userId }));
+                    // Convert the userId to ObjectId for comparison
+                    var userObjectId = new ObjectId(userId);
+                    
+                    // Add a match stage at the beginning of our aggregation pipeline to filter by userId
+                    var pipeline = new List<BsonDocument>
+                    {
+                        new BsonDocument("$match", filter),
+                        new BsonDocument("$addFields", new BsonDocument("AssignedToObjIds",
+                            new BsonDocument("$map", new BsonDocument
+                            {
+                                { "input", "$AssignedTo" },
+                                { "as", "userId" },
+                                { "in", new BsonDocument("$toObjectId", "$$userId") }
+                            }))),
+                        new BsonDocument("$match", new BsonDocument("AssignedToObjIds", 
+                            new BsonDocument("$in", new BsonArray { userObjectId }))),
+                        new BsonDocument("$lookup", new BsonDocument
+                        {
+                            { "from", "Users" },
+                            { "localField", "AssignedToObjIds" },
+                            { "foreignField", "_id" },
+                            { "as", "AssignedUsers" }
+                        }),
+                        new BsonDocument("$addFields", new BsonDocument("AssignedToDetails",
+                            new BsonDocument("$map", new BsonDocument
+                            {
+                                { "input", "$AssignedUsers" },
+                                { "as", "user" },
+                                { "in", new BsonDocument
+                                    {
+                                        { "Id", new BsonDocument("$toString", "$$user._id") },
+                                        { "Name", new BsonDocument("$concat", new BsonArray { "$$user.FirstName", " ", "$$user.LastName" }) }
+                                    }
+                                }
+                            }))),
+                        new BsonDocument("$project", new BsonDocument
+                        {
+                            { "Id", "$_id" },
+                            { "TaskTitle", 1 },
+                            { "TaskStatus", 1 },
+                            { "AssignedTo", "$AssignedToDetails" },
+                            { "CreatedBy", 1 },
+                            { "UpdatedBy", 1 },
+                            { "CreativeType", 1 },
+                            { "DueDate", 1 },
+                            { "CreatedOn", 1 },
+                            { "UpdatedOn", 1 },
+                            { "Description", 1 },
+                            { "OrganizationId", 1 },
+                            { "EventId", 1 },
+                            { "CreativeNumbers", 1 },
+                            { "ChecklistDetails", 1 }
+                        })
+                    };
+
+                    var db = _mongoDbService.GetDatabase();
+                    var taskCollection = db.GetCollection<BsonDocument>("TasksMst");
+                    var result = await taskCollection.Aggregate<BsonDocument>(pipeline).ToListAsync();
+
+                    if (result == null || result.Count == 0)
+                        return new NotFoundObjectResult(new { message = "No tasks found for the given criteria." });
+
+                    var tasks = result.Select(doc => new TaskWithUserDto
+                    {
+                        Id = doc.GetValue("Id").ToString(),
+                        TaskTitle = doc.GetValue("TaskTitle", "").AsString,
+                        TaskStatus = doc.GetValue("TaskStatus", "").AsString,
+                        AssignedTo = doc.TryGetValue("AssignedTo", out var assignedToVal) && assignedToVal.IsBsonArray
+                            ? assignedToVal.AsBsonArray.Select(x => new AssignedUserDto
+                            {
+                                Id = x["Id"].AsString,
+                                Name = x["Name"].AsString
+                            }).ToList()
+                            : new List<AssignedUserDto>(),
+                        CreatedBy = doc.GetValue("CreatedBy", 0).ToInt32(),
+                        UpdatedBy = doc.GetValue("UpdatedBy", 0).ToInt32(),
+                        CreativeType = doc.GetValue("CreativeType", "").AsString,
+                        DueDate = doc.GetValue("DueDate").ToUniversalTime(),
+                        CreatedOn = doc.GetValue("CreatedOn").ToUniversalTime(),
+                        UpdatedOn = doc.GetValue("UpdatedOn").ToUniversalTime(),
+                        Description = doc.GetValue("Description", "").AsString,
+                        OrganizationId = doc.GetValue("OrganizationId", "").AsString,
+                        EventId = doc.GetValue("EventId", "").AsString,
+                        CreativeNumbers = doc.GetValue("CreativeNumbers", 0).ToInt32(),
+                        ChecklistDetails = doc.Contains("ChecklistDetails") && doc["ChecklistDetails"].IsBsonArray
+                            ? doc["ChecklistDetails"].AsBsonArray.Select(x => new DtoChecklistItem
+                            {
+                                Text = x["Text"].AsString,
+                                Checked = x["Checked"].AsBoolean,
+                                IsPlaceholder = x["IsPlaceholder"].AsBoolean
+                            }).ToList()
+                            : new List<DtoChecklistItem>()
+                    }).ToList();
+
+                    return new OkObjectResult(tasks);
                 }
+                else
+                {
+                    // If no userId provided, use the existing AggregateTasksAsync method
+                    var tasks = await AggregateTasksAsync(filter);
 
-                var tasks = await AggregateTasksAsync(filter);
+                    if (tasks == null || tasks.Count == 0)
+                        return new NotFoundObjectResult(new { message = "No tasks found for the given criteria." });
 
-                if (tasks == null || tasks.Count == 0)
-                    return new NotFoundObjectResult(new { message = "No tasks found for the given criteria." });
-
-                return new OkObjectResult(tasks);
+                    return new OkObjectResult(tasks);
+                }
             }
             catch (Exception ex)
             {
@@ -157,31 +255,6 @@ namespace YourNamespace.Services
             }
         }
 
-        public async Task<IActionResult> GetPublishedTasksAsync(string eventId)
-        {
-            if (string.IsNullOrWhiteSpace(eventId))
-                return new BadRequestObjectResult(new { message = "Event ID is required." });
-
-            try
-            {
-                var filter = new BsonDocument
-                {
-                    { "IsDeleted", false },
-                    { "TaskStatus", "Published" },
-                    { "EventId", eventId }
-                };
-                var tasks = await AggregateTasksAsync(filter);
-
-                if (tasks == null || tasks.Count == 0)
-                    return new NotFoundObjectResult(new { message = "No published tasks found for this event." });
-
-                return new OkObjectResult(tasks);
-            }
-            catch (Exception ex)
-            {
-                return new ObjectResult(new { message = $"An error occurred: {ex.Message}" }) { StatusCode = 500 };
-            }
-        }
 
         private async Task<List<TaskWithUserDto>> AggregateTasksAsync(BsonDocument? filter = null)
         {
@@ -205,19 +278,24 @@ namespace YourNamespace.Services
                     { "foreignField", "_id" },
                     { "as", "AssignedUsers" }
                 }),
-                new BsonDocument("$addFields", new BsonDocument("AssignedToFullNames",
+                new BsonDocument("$addFields", new BsonDocument("AssignedToDetails",
                     new BsonDocument("$map", new BsonDocument
                     {
                         { "input", "$AssignedUsers" },
                         { "as", "user" },
-                        { "in", new BsonDocument("$concat", new BsonArray { "$$user.FirstName", " ", "$$user.LastName" }) }
+                        { "in", new BsonDocument
+                            {
+                                { "Id", new BsonDocument("$toString", "$$user._id") },
+                                { "Name", new BsonDocument("$concat", new BsonArray { "$$user.FirstName", " ", "$$user.LastName" }) }
+                            }
+                        }
                     }))),
                 new BsonDocument("$project", new BsonDocument
                 {
                     { "Id", "$_id" },
                     { "TaskTitle", 1 },
                     { "TaskStatus", 1 },
-                    { "AssignedTo", "$AssignedToFullNames" },
+                    { "AssignedTo", "$AssignedToDetails" },
                     { "CreatedBy", 1 },
                     { "UpdatedBy", 1 },
                     { "CreativeType", 1 },
@@ -240,8 +318,12 @@ namespace YourNamespace.Services
                 TaskTitle = doc.GetValue("TaskTitle", "").AsString,
                 TaskStatus = doc.GetValue("TaskStatus", "").AsString,
                 AssignedTo = doc.TryGetValue("AssignedTo", out var assignedToVal) && assignedToVal.IsBsonArray
-                    ? assignedToVal.AsBsonArray.Select(x => x.AsString).ToList()
-                    : new List<string>(),
+                    ? assignedToVal.AsBsonArray.Select(x => new AssignedUserDto
+                    {
+                        Id = x["Id"].AsString,
+                        Name = x["Name"].AsString
+                    }).ToList()
+                    : new List<AssignedUserDto>(),
                 CreatedBy = doc.GetValue("CreatedBy", 0).ToInt32(),
                 UpdatedBy = doc.GetValue("UpdatedBy", 0).ToInt32(),
                 CreativeType = doc.GetValue("CreativeType", "").AsString,
@@ -353,6 +435,89 @@ namespace YourNamespace.Services
         internal async Task<IActionResult> GetDashboardDataAsync()
         {
             throw new NotImplementedException();
+        }
+
+        // New method to fetch published tasks with their approved documents
+        public async Task<IActionResult> GetPublishedTasksWithDocumentsAsync(string eventId)
+        {
+            if (string.IsNullOrWhiteSpace(eventId))
+                return new BadRequestObjectResult(new { message = "Event ID is required." });
+
+            try
+            {
+                // 1. Fetch approved tasks for the event
+                var filter = new BsonDocument
+                {
+                    { "IsDeleted", false },
+                    { "TaskStatus", "Approved" },
+                    { "EventId", eventId }
+                };
+                var tasks = await AggregateTasksAsync(filter);
+                if (tasks == null || tasks.Count == 0)
+                    return new NotFoundObjectResult(new { message = "No published tasks found for this event." });
+
+                // Prepare Mongo collections
+                var db = _mongoDbService.GetDatabase();
+                var documentDetailsCollection = db.GetCollection<DocumentDetails>("DocumentDetails");
+                var documentsCollection = db.GetCollection<Document>("Documents");
+
+                var result = new List<YourNamespace.DTO.TaskWithUserAndDocumentsDto>();
+
+                foreach (var task in tasks)
+                {
+                    // 2. Find DocumentDetails for this event and task
+                    var docDetails = await documentDetailsCollection.Find(dd => dd.EventId == eventId && dd.TaskId == task.Id).ToListAsync();
+                    var documentIds = docDetails.Select(dd => dd.DocumentId).Distinct().ToList();
+
+                    // 3. Find Documents with Status: "Approved" and IsDeleted: false
+                    var approvedDocuments = new List<YourNamespace.DTO.DocumentWithMetadataDto>();
+                    if (documentIds.Count > 0)
+                    {
+                        var filterDocs = Builders<Document>.Filter.In(d => d.Id, documentIds.Select(MongoDB.Bson.ObjectId.Parse)) &
+                                         Builders<Document>.Filter.Eq(d => d.Status, "Approved") &
+                                         Builders<Document>.Filter.Eq(d => d.IsDeleted, false);
+                        var docs = await documentsCollection.Find(filterDocs).ToListAsync();
+                        approvedDocuments = docs.Select(doc => new YourNamespace.DTO.DocumentWithMetadataDto
+                        {
+                            DocumentId = doc.Id.ToString(),
+                            Filename = doc.FileName,
+                            ContentType = doc.ContentType,
+                            Description = doc.Description,
+                            Status = doc.Status,
+                            Id = doc.Id.ToString(),
+                            PublishedTo = doc.PublishedTo
+                        }).ToList();
+                    }
+
+                    // 4. Compose the result DTO
+                    var taskWithDocs = new YourNamespace.DTO.TaskWithUserAndDocumentsDto
+                    {
+                        Id = task.Id,
+                        EventId = task.EventId,
+                        TaskTitle = task.TaskTitle,
+                        TaskStatus = task.TaskStatus,
+                        AssignedTo = task.AssignedTo,
+                        CreatedBy = task.CreatedBy,
+                        UpdatedBy = task.UpdatedBy,
+                        CreativeType = task.CreativeType,
+                        DueDate = task.DueDate,
+                        CreatedOn = task.CreatedOn,
+                        UpdatedOn = task.UpdatedOn,
+                        CreativeNumbers = task.CreativeNumbers,
+                        ChecklistDetails = task.ChecklistDetails,
+                        Description = task.Description,
+                        OrganizationId = task.OrganizationId,
+                        Documents = approvedDocuments
+                    };
+                    result.Add(taskWithDocs);
+                }
+
+                return new OkObjectResult(result);
+            }
+            catch (Exception ex)
+            {
+                return new ObjectResult(new { message = $"An error occurred: {ex.Message}" }) { StatusCode = 500 };
+            }
         }
     }
 }

@@ -153,32 +153,88 @@ namespace YourNamespace.Services
         {
             try
             {
-                var database = _documents.Database;
-                var filesCollection = database.GetCollection<BsonDocument>("documents.files");
+                var filesCollection = _documents.Database.GetCollection<BsonDocument>("documents.files");
+                var documentsCollection = _documents.Database.GetCollection<BsonDocument>("Documents");
 
-                var files = await filesCollection.Find(FilterDefinition<BsonDocument>.Empty).ToListAsync();
-
-                var metadataList = files.Select(f => new
+                var pipeline = new[]
                 {
-                    Id = f.GetValue("_id").ToString(),
-                    Filename = f.GetValue("filename", "").AsString,
-                    Length = f.GetValue("length", 0).ToInt64(),
-                    ChunkSize = f.GetValue("chunkSize", 0).ToInt32(),
-                    UploadDate = f.GetValue("uploadDate", BsonNull.Value).ToUniversalTime(),
-                    Metadata = new
+                    new BsonDocument("$lookup", new BsonDocument
                     {
-                        ContentType = f.GetValue("metadata")?.AsBsonDocument?.GetValue("contentType", "").AsString ?? "",
-                        Description = f.GetValue("metadata")?.AsBsonDocument?.GetValue("description", "").AsString ?? ""
-                    }
-                });
+                        { "from", "Documents" },
+                        { "localField", "_id" },
+                        { "foreignField", "fileId" },
+                        { "as", "documentMeta" }
+                    }),
+                    new BsonDocument("$unwind", new BsonDocument
+                    {
+                        { "path", "$documentMeta" },
+                        { "preserveNullAndEmptyArrays", false }
+                    }),
+                    new BsonDocument("$match", new BsonDocument("documentMeta.isDeleted", false)),
+                    new BsonDocument("$project", new BsonDocument
+                    {
+                        { "_id", 0 },
+                        { "id", "$_id" },
+                        { "documentId", "$documentMeta._id" },
+                        { "filename", "$filename" },
+                        { "length", "$length" },
+                        { "chunkSize", "$chunkSize" },
+                        { "uploadDate", "$uploadDate" },
+                        { "contentType", "$metadata.contentType" },
+                        { "description", "$metadata.description" },
+                        { "status", "$documentMeta.Status" },
+                        { "publishedTo", "$documentMeta.PublishedTo" }
+                    })
+                };
 
-                return new OkObjectResult(metadataList);
+                var results = await filesCollection.Aggregate<BsonDocument>(pipeline).ToListAsync();
+
+                var metadataList = results.Select(f =>
+                {
+                    var publishedTo = new List<object>();
+                    if (f.Contains("publishedTo") && f["publishedTo"].IsBsonArray)
+                    {
+                        publishedTo = f["publishedTo"].AsBsonArray.Select(p => new
+                        {
+                            Platform = p["Platform"].AsString,
+                            IsPublished = p["IsPublished"].AsBoolean,
+                            PublishedById = p["PublishedById"].AsString,
+                            PublishedByName = p["PublishedByName"].AsString,
+                            PublishedAt = p["PublishedAt"].ToUniversalTime()
+                        }).ToList<object>();
+                    }
+
+                    return new
+                    {
+                        Id = f["id"].AsObjectId.ToString(),
+                        DocumentId = f["documentId"].AsObjectId.ToString(),
+                        Filename = f["filename"].AsString,
+                        Length = f["length"].AsInt64,
+                        ChunkSize = f["chunkSize"].AsInt32,
+                        UploadDate = f["uploadDate"].ToUniversalTime(),
+                        ContentType = f["contentType"].AsString,
+                        Description = f["description"].AsString,
+                        Status = f["status"].AsString,
+                        PublishedTo = publishedTo
+                    };
+                }).ToList();
+
+                return new OkObjectResult(new
+                {
+                    data = metadataList,
+                    totalCount = metadataList.Count
+                });
             }
             catch (Exception ex)
             {
-                return new ObjectResult(new { message = $"Error fetching metadata: {ex.Message}" }) { StatusCode = 500 };
+                return new ObjectResult(new
+                {
+                    message = $"Error fetching metadata: {ex.Message}"
+                })
+                { StatusCode = 500 };
             }
         }
+
 
         public async Task<IActionResult> GenerateDocumentLinkAsync(string documentId)
         {
@@ -215,6 +271,73 @@ namespace YourNamespace.Services
             {
                 return new ObjectResult(new { message = $"Error generating document link: {ex.Message}" }) { StatusCode = 500 };
             }
+        }
+        public async Task<string> ApproveDocumentAsync(string documentId)
+        {
+            if (!ObjectId.TryParse(documentId, out var objectId))
+                return "Invalid document ID.";
+
+            var document = await _documents.Find(d => d.Id == objectId && !d.IsDeleted).FirstOrDefaultAsync();
+            if (document == null)
+                return "Document not found.";
+
+            if (document.Status == "Approved")
+                return "Document is already approved.";
+
+            var filter = Builders<Document>.Filter.Eq(d => d.Id, objectId);
+            var update = Builders<Document>.Update.Set(d => d.Status, "Approved");
+            var result = await _documents.UpdateOneAsync(filter, update);
+
+            return result.ModifiedCount > 0 ? "Document approved successfully." : "Approval failed.";
+        }
+
+
+        public async Task<string> AddClientPublishedRecordAsync(string documentId, List<string> platforms, string userId, string userName)
+        {
+            if (!ObjectId.TryParse(documentId, out var objectId))
+                return "Invalid document ID.";
+
+            var document = await _documents.Find(d => d.Id == objectId && !d.IsDeleted).FirstOrDefaultAsync();
+            if (document == null)
+                return "Document not found.";
+
+            if (document.Status != "Approved")
+                return "Document is not approved yet.";
+
+            var alreadyPublished = new List<string>();
+            var newlyAdded = new List<string>();
+
+            foreach (var platform in platforms)
+            {
+                var existing = document.PublishedTo.FirstOrDefault(p => p.Platform.Equals(platform, StringComparison.OrdinalIgnoreCase));
+                if (existing != null && existing.IsPublished)
+                {
+                    alreadyPublished.Add(platform);
+                    continue;
+                }
+
+                document.PublishedTo.Add(new PublishStatus
+                {
+                    Platform = platform,
+                    IsPublished = true,
+                    PublishedAt = DateTime.UtcNow,
+                    PublishedById = userId,
+                    PublishedByName = userName
+                });
+
+                newlyAdded.Add(platform);
+            }
+
+            if (newlyAdded.Any())
+                await _documents.ReplaceOneAsync(d => d.Id == document.Id, document);
+
+            if (newlyAdded.Count == 0 && alreadyPublished.Count > 0)
+                return $"Document is already published on: {string.Join(", ", alreadyPublished)}.";
+
+            if (newlyAdded.Count > 0 && alreadyPublished.Count > 0)
+                return $"Document published on: {string.Join(", ", newlyAdded)}. Already published on: {string.Join(", ", alreadyPublished)}.";
+
+            return "Document published successfully.";
         }
 
         public async Task<IActionResult> ViewDocumentAsync(string documentId)

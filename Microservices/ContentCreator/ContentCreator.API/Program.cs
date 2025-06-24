@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+
 // JWT Authentication configuration
 builder.Services.AddAuthentication(options =>
 {

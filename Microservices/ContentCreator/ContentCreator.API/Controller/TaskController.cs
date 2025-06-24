@@ -25,20 +25,20 @@ namespace YourNamespace.Controllers
 
         [HttpGet("by-event/{eventId}")]
         [AuthGuard("Tasks", "Task Management", "Read")]
-        public async Task<IActionResult> GetTasksByEventId(string eventId)
+        public async Task<IActionResult> GetTasksByEventId(string eventId, [FromQuery] string? userId = null)
         {
-            return await _taskService.GetTasksByEventIdAsync(eventId);
+            return await _taskService.GetTasksByEventIdAsync(eventId, userId);
         }
 
         [HttpGet("get_all_tasks")]
         [AuthGuard("Tasks", "Task Management", "Read")]
         public Task<IActionResult> GetAllTasks() => _taskService.GetAllTasksAsync();
 
-        [HttpGet("get_published_tasks/{eventId}")]
+        [HttpGet("get_published_tasks_with_documents/{eventId}")]
         [AuthGuard("Tasks", "Task Management", "Read")]
-        public async Task<IActionResult> GetPublishedTasks(string eventId)
+        public async Task<IActionResult> GetPublishedTasksWithDocuments(string eventId)
         {
-            return await _taskService.GetPublishedTasksAsync(eventId);
+            return await _taskService.GetPublishedTasksWithDocumentsAsync(eventId);
         }
 
         [HttpGet("get_task/{id}")]
