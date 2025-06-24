@@ -340,9 +340,6 @@ namespace YourNamespace.Services
             return "Document published successfully.";
         }
 
-
-
-
         public async Task<IActionResult> ViewDocumentAsync(string documentId)
         {
             if (!ObjectId.TryParse(documentId, out var objectId))

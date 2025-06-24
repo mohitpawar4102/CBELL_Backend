@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Library.Models;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -43,7 +44,7 @@ public class DocumentDetailsService
 
         return new OkObjectResult(new { message = "Document detail added successfully.", id = documentDetail.Id });
     }
-    public async Task<List<DocumentWithMetadataDto>> GetDocumentMetadataByTaskIdAsync(string taskId)
+    public async Task<List<object>> GetDocumentMetadataByTaskIdAsync(string taskId)
     {
         try
         {
@@ -59,7 +60,10 @@ public class DocumentDetailsService
 
             var documentIds = documentDetails.Select(dd => dd.DocumentId).ToList();
 
-            var documentsFilter = Builders<BsonDocument>.Filter.In("_id", documentIds.Select(ObjectId.Parse));
+            var documentsFilter = Builders<BsonDocument>.Filter.And(
+                Builders<BsonDocument>.Filter.In("_id", documentIds.Select(ObjectId.Parse)),
+                Builders<BsonDocument>.Filter.Eq("isDeleted", false)
+            );
             var documents = await _documents.Find(documentsFilter).ToListAsync();
 
             if (documents.Count == 0)
@@ -67,9 +71,9 @@ public class DocumentDetailsService
                 throw new Exception("No documents found in the Documents collection for the given TaskId.");
             }
 
-            var fileIdToDocumentIdMap = documents.ToDictionary(
+            var fileIdToDocumentMap = documents.ToDictionary(
                 doc => doc["fileId"].AsObjectId,
-                doc => doc["_id"].AsObjectId.ToString()
+                doc => doc
             );
 
             var fileIds = documents.Select(doc => doc["fileId"].AsObjectId).ToList();
@@ -82,16 +86,33 @@ public class DocumentDetailsService
                 throw new Exception("No files found for the given TaskId.");
             }
 
-            var metadataList = files.Select(file => new DocumentWithMetadataDto
-            {
-                DocumentId = fileIdToDocumentIdMap[file["_id"].AsObjectId],
-                Filename = file["filename"].AsString,
-                Length = file["length"].AsInt64,
-                ChunkSize = file["chunkSize"].AsInt32,
-                UploadDate = file["uploadDate"].ToNullableUniversalTime(),
-                ContentType = file["metadata"]["contentType"].AsString,
-                Description = file["metadata"]["description"].AsString
-            }).ToList();
+            var metadataList = files.Select(file => {
+                var doc = fileIdToDocumentMap[file["_id"].AsObjectId];
+                var publishedTo = new List<object>();
+                if (doc.Contains("PublishedTo") && doc["PublishedTo"].IsBsonArray)
+                {
+                    publishedTo = doc["PublishedTo"].AsBsonArray.Select(p => new
+                    {
+                        Platform = p["Platform"].AsString,
+                        IsPublished = p["IsPublished"].AsBoolean,
+                        PublishedById = p["PublishedById"].AsString,
+                        PublishedByName = p["PublishedByName"].AsString,
+                        PublishedAt = p["PublishedAt"].ToUniversalTime()
+                    }).ToList<object>();
+                }
+                return new
+                {
+                    DocumentId = doc["_id"].AsObjectId.ToString(),
+                    Filename = file["filename"].AsString,
+                    Length = file["length"].AsInt64,
+                    ChunkSize = file["chunkSize"].AsInt32,
+                    UploadDate = file["uploadDate"].ToUniversalTime(),
+                    ContentType = file["metadata"]["contentType"].AsString,
+                    Description = file["metadata"]["description"].AsString,
+                    Status = doc.Contains("Status") ? doc["Status"].AsString : string.Empty,
+                    PublishedTo = publishedTo
+                };
+            }).ToList<object>();
 
             return metadataList;
         }
@@ -101,7 +122,7 @@ public class DocumentDetailsService
         }
     }
 
-    public async Task<List<DocumentWithMetadataDto>> GetDocumentMetadataByEventIdAsync(string eventId)
+    public async Task<List<object>> GetDocumentMetadataByEventIdAsync(string eventId)
     {
         try
         {
@@ -117,7 +138,10 @@ public class DocumentDetailsService
 
             var documentIds = documentDetails.Select(dd => dd.DocumentId).ToList();
 
-            var documentsFilter = Builders<BsonDocument>.Filter.In("_id", documentIds.Select(ObjectId.Parse));
+            var documentsFilter = Builders<BsonDocument>.Filter.And(
+                Builders<BsonDocument>.Filter.In("_id", documentIds.Select(ObjectId.Parse)),
+                Builders<BsonDocument>.Filter.Eq("isDeleted", false)
+            );
             var documents = await _documents.Find(documentsFilter).ToListAsync();
 
             if (documents.Count == 0)
@@ -125,9 +149,9 @@ public class DocumentDetailsService
                 throw new Exception("No documents found in the Documents collection for the given EventId.");
             }
 
-            var fileIdToDocumentIdMap = documents.ToDictionary(
+            var fileIdToDocumentMap = documents.ToDictionary(
                 doc => doc["fileId"].AsObjectId,
-                doc => doc["_id"].AsObjectId.ToString()
+                doc => doc
             );
 
             var fileIds = documents.Select(doc => doc["fileId"].AsObjectId).ToList();
@@ -140,16 +164,33 @@ public class DocumentDetailsService
                 throw new Exception("No files found in the documents.files collection for the given EventId.");
             }
 
-            var metadataList = files.Select(file => new DocumentWithMetadataDto
-            {
-                DocumentId = fileIdToDocumentIdMap[file["_id"].AsObjectId],
-                Filename = file["filename"].AsString,
-                Length = file["length"].AsInt64,
-                ChunkSize = file["chunkSize"].AsInt32,
-                UploadDate = file["uploadDate"].ToNullableUniversalTime(),
-                ContentType = file["metadata"]["contentType"].AsString,
-                Description = file["metadata"]["description"].AsString
-            }).ToList();
+            var metadataList = files.Select(file => {
+                var doc = fileIdToDocumentMap[file["_id"].AsObjectId];
+                var publishedTo = new List<object>();
+                if (doc.Contains("PublishedTo") && doc["PublishedTo"].IsBsonArray)
+                {
+                    publishedTo = doc["PublishedTo"].AsBsonArray.Select(p => new
+                    {
+                        Platform = p["Platform"].AsString,
+                        IsPublished = p["IsPublished"].AsBoolean,
+                        PublishedById = p["PublishedById"].AsString,
+                        PublishedByName = p["PublishedByName"].AsString,
+                        PublishedAt = p["PublishedAt"].ToUniversalTime()
+                    }).ToList<object>();
+                }
+                return new
+                {
+                    DocumentId = doc["_id"].AsObjectId.ToString(),
+                    Filename = file["filename"].AsString,
+                    Length = file["length"].AsInt64,
+                    ChunkSize = file["chunkSize"].AsInt32,
+                    UploadDate = file["uploadDate"].ToUniversalTime(),
+                    ContentType = file["metadata"]["contentType"].AsString,
+                    Description = file["metadata"]["description"].AsString,
+                    Status = doc.Contains("Status") ? doc["Status"].AsString : string.Empty,
+                    PublishedTo = publishedTo
+                };
+            }).ToList<object>();
 
             return metadataList;
         }

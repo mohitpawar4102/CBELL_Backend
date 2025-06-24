@@ -3,6 +3,12 @@ using System.Collections.Generic;
 
 namespace YourNamespace.DTO
 {
+    public class AssignedUserDto
+    {
+        public string Id { get; set; }
+        public string Name { get; set; }
+    }
+
     public class TaskWithUserDto
     {
         public string Id { get; set; }
@@ -10,8 +16,8 @@ namespace YourNamespace.DTO
         public string TaskTitle { get; set; }
         public string TaskStatus { get; set; }
 
-        // Now handles multiple assigned user names
-        public List<string> AssignedTo { get; set; } = new List<string>();
+        // Updated to use AssignedUserDto
+        public List<AssignedUserDto> AssignedTo { get; set; } = new List<AssignedUserDto>();
 
         public int CreatedBy { get; set; }
         public int UpdatedBy { get; set; }
@@ -23,5 +29,10 @@ namespace YourNamespace.DTO
         public List<ChecklistItem> ChecklistDetails { get; set; }
         public string Description { get; set; }
         public string? OrganizationId { get; set; }
+    }
+
+    public class TaskWithUserAndDocumentsDto : TaskWithUserDto
+    {
+        public List<DocumentWithMetadataDto> Documents { get; set; } = new List<DocumentWithMetadataDto>();
     }
 }
