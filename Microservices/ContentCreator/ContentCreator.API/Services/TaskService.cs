@@ -107,7 +107,7 @@ namespace YourNamespace.Services
                                 { "as", "userId" },
                                 { "in", new BsonDocument("$toObjectId", "$$userId") }
                             }))),
-                        new BsonDocument("$match", new BsonDocument("AssignedToObjIds", 
+                        new BsonDocument("$match", new BsonDocument("AssignedToObjIds",
                             new BsonDocument("$in", new BsonArray { userObjectId }))),
                         new BsonDocument("$lookup", new BsonDocument
                         {
@@ -469,12 +469,13 @@ namespace YourNamespace.Services
                     var docDetails = await documentDetailsCollection.Find(dd => dd.EventId == eventId && dd.TaskId == task.Id).ToListAsync();
                     var documentIds = docDetails.Select(dd => dd.DocumentId).Distinct().ToList();
 
-                    // 3. Find Documents with Status: "Approved" and IsDeleted: false
+                    // 3. Find Documents with Status: "Approved" or "Published" and IsDeleted: false
                     var approvedDocuments = new List<YourNamespace.DTO.DocumentWithMetadataDto>();
                     if (documentIds.Count > 0)
                     {
                         var filterDocs = Builders<Document>.Filter.In(d => d.Id, documentIds.Select(MongoDB.Bson.ObjectId.Parse)) &
-                                         Builders<Document>.Filter.Eq(d => d.Status, "Approved") &
+                                         (Builders<Document>.Filter.Eq(d => d.Status, "Approved") |
+                                          Builders<Document>.Filter.Eq(d => d.Status, "Published")) &
                                          Builders<Document>.Filter.Eq(d => d.IsDeleted, false);
                         var docs = await documentsCollection.Find(filterDocs).ToListAsync();
                         approvedDocuments = docs.Select(doc => new YourNamespace.DTO.DocumentWithMetadataDto

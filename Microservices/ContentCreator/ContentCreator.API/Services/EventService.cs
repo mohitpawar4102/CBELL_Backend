@@ -6,6 +6,7 @@ using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace YourNamespace.Services
 {
@@ -61,32 +62,59 @@ namespace YourNamespace.Services
             }
         }
 
-        public async Task<IActionResult> GetAllEventsAsync()
+        public async Task<IActionResult> GetAllEventsAsync(string organizationId)
         {
+            if (string.IsNullOrWhiteSpace(organizationId))
+                return new BadRequestObjectResult(new { message = "OrganizationId is required." });
             try
             {
-                var events = await GetEventsCollection().Find(e => !e.IsDeleted).ToListAsync();
-                return new OkObjectResult(events);
+                var events = await GetEventsCollection().Find(e => !e.IsDeleted && e.OrganizationId == organizationId).ToListAsync();
+                
+                if (events == null || !events.Any())
+                    return new NotFoundObjectResult(new { message = "No events found for this organization." });
+
+                return new OkObjectResult(new { 
+                    message = "Events retrieved successfully.",
+                    data = events 
+                });
             }
             catch (Exception ex)
             {
-                return new ObjectResult(new { message = $"An error occurred: {ex.Message}" }) { StatusCode = 500 };
+                // Log the exception details here if you have logging implemented
+                return new ObjectResult(new { 
+                    message = "An error occurred while retrieving events.",
+                    error = ex.Message 
+                }) { StatusCode = 500 };
             }
         }
 
-        public async Task<IActionResult> GetEventByIdAsync(string id)
+        public async Task<IActionResult> GetEventByIdAsync(string id, string organizationId)
         {
+            if (string.IsNullOrWhiteSpace(organizationId))
+                return new BadRequestObjectResult(new { message = "OrganizationId is required." });
+            
+            if (string.IsNullOrWhiteSpace(id))
+                return new BadRequestObjectResult(new { message = "Event ID is required." });
+
             try
             {
-                var eventItem = await GetEventsCollection().Find(e => e.Id == id && !e.IsDeleted).FirstOrDefaultAsync();
+                var eventItem = await GetEventsCollection().Find(e => e.Id == id && !e.IsDeleted && e.OrganizationId == organizationId).FirstOrDefaultAsync();
+                
                 if (eventItem == null)
-                    return new NotFoundObjectResult(new { message = "Event not found." });
+                    return new NotFoundObjectResult(new { message = "Event not found for this organization." });
 
-                return new OkObjectResult(eventItem);
+                return new OkObjectResult(new { 
+                    message = "Event retrieved successfully.",
+                    data = eventItem 
+                });
             }
             catch (Exception ex)
             {
-                return new ObjectResult(new { message = $"An error occurred: {ex.Message}" }) { StatusCode = 500 };
+                // Log the exception details here if you have logging implemented
+                return new ObjectResult(new { 
+                    message = "An error occurred while retrieving the event.",
+                    error = ex.Message 
+                }) { StatusCode = 500 };
             }
         }
 

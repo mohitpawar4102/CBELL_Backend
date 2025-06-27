@@ -329,7 +329,10 @@ namespace YourNamespace.Services
             }
 
             if (newlyAdded.Any())
+            {
+                document.Status = "Published";
                 await _documents.ReplaceOneAsync(d => d.Id == document.Id, document);
+            }
 
             if (newlyAdded.Count == 0 && alreadyPublished.Count > 0)
                 return $"Document is already published on: {string.Join(", ", alreadyPublished)}.";
