@@ -79,6 +79,18 @@
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
     },
     {
+      "DownstreamPathTemplate": "/api/email/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "contentcreator-api",
+          "Port": 80
+        }
+      ],
+      "UpstreamPathTemplate": "/email/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+    },
+    {
       "DownstreamPathTemplate": "/api/permission-types/{everything}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [

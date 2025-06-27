@@ -26,11 +26,11 @@ namespace YourNamespace.Controllers
 
         [HttpGet("get_all_events")]
         [AuthGuard("Events", "Event Management", "Read")] // Requires Read permission
-        public Task<IActionResult> GetAllEvents() => _eventService.GetAllEventsAsync();
+        public Task<IActionResult> GetAllEvents([FromQuery] string organizationId) => _eventService.GetAllEventsAsync(organizationId);
 
         [HttpGet("get_event/{id}")]
         [AuthGuard("Events", "Event Management", "Read")] // Requires Read permission
-        public Task<IActionResult> GetEventById(string id) => _eventService.GetEventByIdAsync(id);
+        public Task<IActionResult> GetEventById(string id, [FromQuery] string organizationId) => _eventService.GetEventByIdAsync(id, organizationId);
 
         [HttpPut("update/{id}")]
         [AuthGuard("Events", "Event Management", "Update")] // Requires Update permission

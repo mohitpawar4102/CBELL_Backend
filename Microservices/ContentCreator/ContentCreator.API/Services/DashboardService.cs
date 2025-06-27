@@ -164,6 +164,7 @@ namespace YourNamespace.Services
         {
             { "TaskTitle", 1 },
             { "DueDate", 1 },
+            { "TaskStatus", 1 },
             { "EventName", "$Event.EventName" },
             { "OrganizationName", "$Organization.OrganizationName" }
         })
@@ -177,6 +178,7 @@ namespace YourNamespace.Services
             {
                 TaskTitle = doc["TaskTitle"].AsString,
                 DueDate = doc["DueDate"].ToUniversalTime(),
+                TaskStatus = doc["TaskStatus"].AsString,
                 EventName = doc.TryGetValue("EventName", out var evName) ? evName.AsString : null,
                 OrganizationName = doc.TryGetValue("OrganizationName", out var orgName) ? orgName.AsString : null
             }).Cast<object>().ToList();

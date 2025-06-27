@@ -31,6 +31,7 @@ builder.Services.AddSingleton(database);
 
 // Register services in DI container
 builder.Services.AddScoped<TokenService>(); // TokenService for JWT generation
+builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<AuthService>();  // Register AuthService for authentication logic
 builder.Services.AddScoped<FeatureService>();
 builder.Services.AddScoped<ModuleService>();
