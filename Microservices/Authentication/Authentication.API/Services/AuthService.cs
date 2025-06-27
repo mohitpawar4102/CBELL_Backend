@@ -108,7 +108,7 @@ namespace YourNamespace.Services
                 await usersCollection.ReplaceOneAsync(u => u.Id == user.Id, user);
 
                 SetAuthTokenCookie("LocalAccessToken", accessToken);
-                SetAuthTokenCookie("LocalRefreshToken", refreshToken);
+                SetAuthTokenCookie("LocalRefreshToken", refreshToken, false);
 
                 // Fetch organization details
                 var organizationsCollection = _mongoDbService.GetDatabase().GetCollection<BsonDocument>("OrganizationMst");
@@ -247,12 +247,12 @@ namespace YourNamespace.Services
             await usersCollection.ReplaceOneAsync(u => u.Id == user.Id, user);
 
             SetAuthTokenCookie("LocalAccessToken", accessToken);
-            SetAuthTokenCookie("LocalRefreshToken", refreshToken);
-            SetAuthTokenCookie("GoogleAccessToken", googleAccessToken);
+            SetAuthTokenCookie("LocalRefreshToken", refreshToken, false);
+            SetAuthTokenCookie("GoogleAccessToken", googleAccessToken, false);
 
             if (!string.IsNullOrEmpty(googleRefreshToken))
             {
-                SetAuthTokenCookie("GoogleRefreshToken", googleRefreshToken);
+                SetAuthTokenCookie("GoogleRefreshToken", googleRefreshToken, false);
             }
 
             return new OkObjectResult(new
@@ -263,7 +263,7 @@ namespace YourNamespace.Services
             });
         }
 
-        private void SetAuthTokenCookie(string key, string value)
+        private void SetAuthTokenCookie(string key, string value, bool httpOnly = true)
         {
             if (!string.IsNullOrEmpty(value))
             {
@@ -271,7 +271,7 @@ namespace YourNamespace.Services
                 var encodedValue = System.Web.HttpUtility.UrlEncode(value);
                 context?.Response.Cookies.Append(key, encodedValue, new CookieOptions
                 {
-                    HttpOnly = true,
+                    HttpOnly = httpOnly,
                     Secure = false,  // Set to false for HTTP localhost
                     SameSite = SameSiteMode.Lax,
                     Expires = DateTime.UtcNow.AddDays(7),
@@ -497,7 +497,7 @@ namespace YourNamespace.Services
                 await usersCollection.ReplaceOneAsync(u => u.Id == user.Id, user);
 
                 SetAuthTokenCookie("LocalAccessToken", newAccessToken);
-                SetAuthTokenCookie("LocalRefreshToken", newRefreshToken);
+                SetAuthTokenCookie("LocalRefreshToken", newRefreshToken, false);
 
                 return new OkObjectResult(new { accessToken = newAccessToken, refreshToken = newRefreshToken });
             }
