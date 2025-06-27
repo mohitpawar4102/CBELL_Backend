@@ -79,7 +79,7 @@
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
     },
     {
-      "DownstreamPathTemplate": "api/email/{everything}",
+      "DownstreamPathTemplate": "/api/email/{everything}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
