@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using YourApiMicroservice.Auth;
 using YourNamespace.Services;
+using MongoDB.Driver;
+using YourNamespace.Models;
 
 namespace YourNamespace.Controllers
 {
@@ -17,9 +19,12 @@ namespace YourNamespace.Controllers
 
         [HttpGet]
         [AuthGuard("Dashboard", "Dashboard Management", "Read")]
-        public async Task<IActionResult> GetDashboard()
+        public async Task<IActionResult> GetDashboard([FromQuery] string organizationId)
         {
-            return await _dashboardService.GetDashboardDataAsync();
+            if (string.IsNullOrEmpty(organizationId))
+                return BadRequest("organizationId is required.");
+
+            return await _dashboardService.GetDashboardDataAsync(organizationId);
         }
     }
 }
