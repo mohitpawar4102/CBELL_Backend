@@ -23,6 +23,11 @@ namespace YourNamespace.Services
             return _mongoDbService.GetDatabase().GetCollection<Event>("EventsMst");
         }
 
+        private IMongoCollection<EventTypeModel> GetEventTypesCollection()
+        {
+            return _mongoDbService.GetDatabase().GetCollection<EventTypeModel>("EventTypes");
+        }
+
         public async Task<IActionResult> CreateEventAsync(EventDto eventDto)
         {
             if (eventDto == null)
@@ -69,21 +74,45 @@ namespace YourNamespace.Services
             try
             {
                 var events = await GetEventsCollection().Find(e => !e.IsDeleted && e.OrganizationId == organizationId).ToListAsync();
-                
                 if (events == null || !events.Any())
                     return new NotFoundObjectResult(new { message = "No events found for this organization." });
 
-                return new OkObjectResult(new { 
+                // Fetch all event type ids
+                var eventTypeIds = events.Select(e => e.EventTypeId).Distinct().ToList();
+                var eventTypes = await GetEventTypesCollection().Find(et => eventTypeIds.Contains(et.Id)).ToListAsync();
+                var eventTypeDict = eventTypes.ToDictionary(et => et.Id, et => et.TypeName);
+
+                var result = events.Select(e => new {
+                    e.Id,
+                    e.EventName,
+                    e.EventTypeId,
+                    e.EventTypeDesc,
+                    e.EventDescription,
+                    e.LocationDetails,
+                    e.Coordinators,
+                    e.SpecialGuests,
+                    e.CreatedBy,
+                    e.CreatedOn,
+                    e.EventDate,
+                    e.UpdatedBy,
+                    e.UpdatedOn,
+                    e.OrganizationId,
+                    e.IsDeleted,
+                    e.DeletedOn,
+                    TypeName = eventTypeDict.ContainsKey(e.EventTypeId) ? eventTypeDict[e.EventTypeId] : null
+                });
+
+                return new OkObjectResult(new {
                     message = "Events retrieved successfully.",
-                    data = events 
+                    data = result
                 });
             }
             catch (Exception ex)
             {
                 // Log the exception details here if you have logging implemented
-                return new ObjectResult(new { 
+                return new ObjectResult(new {
                     message = "An error occurred while retrieving events.",
-                    error = ex.Message 
+                    error = ex.Message
                 }) { StatusCode = 500 };
             }
         }
@@ -92,28 +121,50 @@ namespace YourNamespace.Services
         {
             if (string.IsNullOrWhiteSpace(organizationId))
                 return new BadRequestObjectResult(new { message = "OrganizationId is required." });
-            
             if (string.IsNullOrWhiteSpace(id))
                 return new BadRequestObjectResult(new { message = "Event ID is required." });
-
             try
             {
                 var eventItem = await GetEventsCollection().Find(e => e.Id == id && !e.IsDeleted && e.OrganizationId == organizationId).FirstOrDefaultAsync();
-                
                 if (eventItem == null)
                     return new NotFoundObjectResult(new { message = "Event not found for this organization." });
-
-                return new OkObjectResult(new { 
+                // Fetch the event type name
+                string typeName = null;
+                if (!string.IsNullOrEmpty(eventItem.EventTypeId))
+                {
+                    var eventType = await GetEventTypesCollection().Find(et => et.Id == eventItem.EventTypeId).FirstOrDefaultAsync();
+                    typeName = eventType?.TypeName;
+                }
+                var result = new {
+                    eventItem.Id,
+                    eventItem.EventName,
+                    eventItem.EventTypeId,
+                    eventItem.EventTypeDesc,
+                    eventItem.EventDescription,
+                    eventItem.LocationDetails,
+                    eventItem.Coordinators,
+                    eventItem.SpecialGuests,
+                    eventItem.CreatedBy,
+                    eventItem.CreatedOn,
+                    eventItem.EventDate,
+                    eventItem.UpdatedBy,
+                    eventItem.UpdatedOn,
+                    eventItem.OrganizationId,
+                    eventItem.IsDeleted,
+                    eventItem.DeletedOn,
+                    TypeName = typeName
+                };
+                return new OkObjectResult(new {
                     message = "Event retrieved successfully.",
-                    data = eventItem 
+                    data = result
                 });
             }
             catch (Exception ex)
             {
                 // Log the exception details here if you have logging implemented
-                return new ObjectResult(new { 
+                return new ObjectResult(new {
                     message = "An error occurred while retrieving the event.",
-                    error = ex.Message 
+                    error = ex.Message
                 }) { StatusCode = 500 };
             }
         }
