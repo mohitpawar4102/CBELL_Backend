@@ -486,7 +486,8 @@ namespace YourNamespace.Services
                             Description = doc.Description,
                             Status = doc.Status,
                             Id = doc.Id.ToString(),
-                            PublishedTo = doc.PublishedTo
+                            PublishedTo = doc.PublishedTo,
+                            FileId = doc.FileId != null ? doc.FileId.ToString() : null
                         }).ToList();
                     }
 

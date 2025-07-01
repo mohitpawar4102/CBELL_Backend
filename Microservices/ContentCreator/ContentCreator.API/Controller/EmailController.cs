@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using YourNamespace.DTO;
 using YourNamespace.Services;
 using System.Threading.Tasks;
+using Hangfire;
 
 namespace YourNamespace.Controller
 {
@@ -16,10 +17,10 @@ namespace YourNamespace.Controller
         }
 
         [HttpPost("send")]
-        public async Task<IActionResult> SendEmail([FromForm] EmailSendDto dto)
+        public IActionResult SendEmail([FromForm] EmailSendDto dto)
         {
-            await _emailService.SendEmailAsync(dto);
-            return Ok(new { message = "Email sent and record stored." });
+            BackgroundJob.Enqueue<EmailService>(service => service.SendEmailAsync(dto));
+            return Ok(new { message = "Email sent Successfully." });
         }
     }
 } 

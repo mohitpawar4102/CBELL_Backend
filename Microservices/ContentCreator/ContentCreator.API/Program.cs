@@ -7,6 +7,11 @@ using YourNamespace.Library.Database;
 using YourNamespace.Models;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
+using Hangfire;
+using Hangfire.Mongo;
+using Hangfire.Mongo.Migration;
+using Hangfire.Mongo.Migration.Strategies;
+using Hangfire.Mongo.Migration.Strategies.Backup;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -97,6 +102,23 @@ builder.Services.AddCors(options =>
             .AllowCredentials());
 });
 
+// Hangfire configuration
+builder.Services.AddHangfire(config =>
+    config.UseMongoStorage(
+        builder.Configuration.GetConnectionString("MongoDb"),
+        "hangfire_jobs",
+        new MongoStorageOptions
+        {
+            MigrationOptions = new MongoMigrationOptions
+            {
+                MigrationStrategy = new MigrateMongoMigrationStrategy(),
+                BackupStrategy = new CollectionMongoBackupStrategy()
+            }
+        }
+    )
+);
+builder.Services.AddHangfireServer();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -167,6 +189,9 @@ app.Use(async (context, next) =>
 
 app.UseAuthorization();
 app.MapControllers();
+
+app.UseHangfireDashboard(); // Optional: for dashboard
+
 app.Run();
 
 // Extension methods for easy access to user data
