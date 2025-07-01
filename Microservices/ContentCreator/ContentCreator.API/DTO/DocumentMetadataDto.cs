@@ -11,5 +11,6 @@ namespace YourNamespace.DTO
         public string Status { get; set; }
         public string Id { get; set; } 
         public List<PublishStatus> PublishedTo { get; set; }
+        public string FileId { get; set; }
     }
 }
